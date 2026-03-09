@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Terminal</title>
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="terminal">
+        <div class="terminal-header">
+            <span class="terminal-title">pedro@portfolio:~</span>
+        </div>
+        <div class="terminal-body">
+            <div id="output"></div>
+            <div class="input-line">
+                <span class="prompt">guest@portfolio:~$</span>
+                <input type="text" id="input" autofocus autocomplete="off" spellcheck="false">
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/lokijs@1.5.12/src/lokijs.min.js"></script>
+    <script src="assets/scripts/i18n.js"></script>
+    <script src="assets/scripts/init-storage.js"></script>
+    <script src="assets/scripts/keyboard-handler.js"></script>
+    <script src="assets/scripts/handle-terminal.js"></script>
+    <script src="assets/scripts/init-terminal.js"></script>
+</body>
+</html>
