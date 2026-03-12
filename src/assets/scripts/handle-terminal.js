@@ -1,13 +1,19 @@
-const input = document.getElementById('input');
-const output = document.getElementById('output');
-const terminalBody = document.querySelector('.terminal-body');
+import { setLang, t } from './i18n.js';
+import { commandsCol, seedCommands } from './init-storage.js';
+
+export const input = document.getElementById('input');
+export const output = document.getElementById('output');
+export const terminalBody = document.querySelector('.terminal-body');
 
 // Command history
-let commandHistory = [];
+export let commandHistory = [];
 let historyIndex = -1;
 
+export function getHistoryIndex() { return historyIndex; }
+export function setHistoryIndex(val) { historyIndex = val; }
+
 // Add output to terminal
-function addOutput(text, className = '') {
+export function addOutput(text, className = '') {
   if (text === null) return;
   
   const line = document.createElement('div');
@@ -18,7 +24,7 @@ function addOutput(text, className = '') {
 }
 
 // Add command to terminal
-function addCommand(command) {
+export function addCommand(command) {
   const line = document.createElement('div');
   line.className = 'output-line command';
   line.innerHTML = `<span class="prompt">guest@portfolio:~$</span> <span class="command-text">${command}</span>`;
@@ -27,7 +33,7 @@ function addCommand(command) {
 }
 
 // Process command
-function processCommand(command) {
+export function processCommand(command) {
   command = command.trim().toLowerCase();
   
   if (command === '') return;
@@ -68,6 +74,6 @@ function processCommand(command) {
 }
 
 // Scroll to bottom
-function scrollToBottom() {
+export function scrollToBottom() {
   terminalBody.scrollTop = terminalBody.scrollHeight;
 }

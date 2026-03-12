@@ -1,8 +1,10 @@
+import { t, tCmd } from './i18n.js';
+
 // Initialize LokiJS database
 const db = new loki('portfolio.db');
-const commandsCol = db.addCollection('commands');
+export const commandsCol = db.addCollection('commands');
 
-function seedCommands() {
+export function seedCommands() {
   commandsCol.clear();
 
   const cmdNames = ['help', 'about', 'skills', 'projects', 'contact', 'education', 'experience', 'clear', 'lang'];
