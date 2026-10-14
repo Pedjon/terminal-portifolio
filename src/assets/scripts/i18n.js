@@ -191,18 +191,18 @@ Jun 2021 - Dez 2021
   }
 };
 
-function t(key) {
+export function t(key) {
   return translations[currentLang][key];
 }
 
-function tCmd(cmdName) {
+export function tCmd(cmdName) {
   return translations[currentLang].commands[cmdName];
 }
 
-function setLang(lang) {
+export function setLang(lang) {
   currentLang = lang;
 }
 
-function getLang() {
+export function getLang() {
   return currentLang;
 }

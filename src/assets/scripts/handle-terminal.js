@@ -1,73 +1,64 @@
-const input = document.getElementById('input');
-const output = document.getElementById('output');
-const terminalBody = document.querySelector('.terminal-body');
+import { setLang, t } from './i18n.js';
 
-// Command history
-let commandHistory = [];
-let historyIndex = -1;
+export function createTerminal({ commandsCol, seedCommands, addCommand, addOutput, clearOutput }) {
+  const commandHistory = [];
+  let historyIndex = -1;
 
-// Add output to terminal
-function addOutput(text, className = '') {
-  if (text === null) return;
-  
-  const line = document.createElement('div');
-  line.className = `output-line ${className}`;
-  line.textContent = text;
-  output.appendChild(line);
-  scrollToBottom();
-}
+  function processCommand(command) {
+    command = command.trim().toLowerCase();
+    if (command === '') return;
 
-// Add command to terminal
-function addCommand(command) {
-  const line = document.createElement('div');
-  line.className = 'output-line command';
-  line.innerHTML = `<span class="prompt">guest@portfolio:~$</span> <span class="command-text">${command}</span>`;
-  output.appendChild(line);
-  scrollToBottom();
-}
+    commandHistory.push(command);
+    historyIndex = commandHistory.length;
+    addCommand(command);
 
-// Process command
-function processCommand(command) {
-  command = command.trim().toLowerCase();
-  
-  if (command === '') return;
-  
-  // Add to history
-  commandHistory.push(command);
-  historyIndex = commandHistory.length;
-  
-  // Display command
-  addCommand(command);
+    if (command.startsWith('lang')) {
+      const parts = command.split(/\s+/);
+      if (parts.length === 2 && (parts[1] === 'en' || parts[1] === 'pt-br')) {
+        const lang = parts[1] === 'pt-br' ? 'pt-BR' : parts[1];
+        setLang(lang);
+        seedCommands();
+        addOutput(t('langChanged')(lang), 'response');
+      } else {
+        addOutput(t('langUsage'), 'response');
+      }
+      return;
+    }
 
-  // Handle lang command
-  if (command.startsWith('lang')) {
-    const parts = command.split(/\s+/);
-    if (parts.length === 2 && (parts[1] === 'en' || parts[1] === 'pt-br')) {
-      const lang = parts[1] === 'pt-br' ? 'pt-BR' : parts[1];
-      setLang(lang);
-      seedCommands();
-      addOutput(t('langChanged')(lang), 'response');
+    const cmd = commandsCol.findOne({ name: command });
+    if (cmd) {
+      if (command === 'clear') {
+        clearOutput();
+      } else if (cmd.output) {
+        addOutput(cmd.output, 'response');
+      }
     } else {
-      addOutput(t('langUsage'), 'response');
+      addOutput(t('commandNotFound')(command), 'error');
     }
-    return;
   }
-  
-  // Query LokiJS for the command
-  const cmd = commandsCol.findOne({ name: command });
-  
-  if (cmd) {
-    if (command === 'clear') {
-      output.innerHTML = '';
-    } else if (cmd.output) {
-      addOutput(cmd.output, 'response');
-    }
-  } else {
-    addOutput(t('commandNotFound')(command), 'error');
-  }
-}
 
-// Scroll to bottom
-function scrollToBottom() {
-  terminalBody.scrollTop = terminalBody.scrollHeight;
+  function previousCommand() {
+    if (historyIndex > 0) {
+      historyIndex--;
+      return commandHistory[historyIndex];
+    }
+    return undefined;
+  }
+
+  function nextCommand() {
+    if (historyIndex < commandHistory.length - 1) {
+      historyIndex++;
+      return commandHistory[historyIndex];
+    }
+    historyIndex = commandHistory.length;
+    return '';
+  }
+
+  function completeCommand(value) {
+    const currentInput = value.toLowerCase();
+    const matches = commandsCol.find().filter(cmd => cmd.name.startsWith(currentInput));
+    return matches.length === 1 ? matches[0].name : value;
+  }
+
+  return { processCommand, previousCommand, nextCommand, completeCommand };
 }

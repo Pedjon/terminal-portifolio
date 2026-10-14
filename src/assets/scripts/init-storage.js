@@ -1,27 +1,32 @@
-// Initialize LokiJS database
-const db = new loki('portfolio.db');
-const commandsCol = db.addCollection('commands');
+import { t, tCmd } from './i18n.js';
 
-function seedCommands() {
-  commandsCol.clear();
-
+export function buildCommands() {
   const cmdNames = ['help', 'about', 'skills', 'projects', 'contact', 'education', 'experience', 'clear', 'lang'];
-  cmdNames.forEach(name => {
+  const commands = cmdNames.map(name => {
     const cmdTranslation = tCmd(name);
-    commandsCol.insert({
-      name: name,
+    return {
+      name,
       description: cmdTranslation.description,
       output: cmdTranslation.output || null
-    });
+    };
   });
 
-  // Build the help output dynamically
-  const allCmds = commandsCol.find();
-  const lines = allCmds.map(c => `  ${c.name.padEnd(11)}- ${c.description}`);
-  const helpText = `${t('helpHeader')}\n${lines.join('\n')}\n  \n${t('helpFooter')}`;
-  const helpCmd = commandsCol.findOne({ name: 'help' });
-  helpCmd.output = helpText;
-  commandsCol.update(helpCmd);
+  const lines = commands.map(c => `  ${c.name.padEnd(11)}- ${c.description}`);
+  const helpCmd = commands.find(c => c.name === 'help');
+  helpCmd.output = `${t('helpHeader')}\n${lines.join('\n')}\n  \n${t('helpFooter')}`;
+
+  return commands;
 }
 
-seedCommands();
+export function initStorage(Loki) {
+  const db = new Loki('portfolio.db');
+  const commandsCol = db.addCollection('commands');
+
+  function seedCommands() {
+    commandsCol.clear();
+    buildCommands().forEach(command => commandsCol.insert(command));
+  }
+
+  seedCommands();
+  return { commandsCol, seedCommands };
+}
