@@ -5,5 +5,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src:/app
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./package.json:/app/package.json:ro
+      - ./yarn.lock:/app/yarn.lock:ro
     restart: unless-stopped

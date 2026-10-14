@@ -1,11 +1,13 @@
-FROM node:alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
-COPY src/ .
+RUN yarn global add serve --prefix /usr/local
 
-RUN npm install -g serve
+COPY package.json yarn.lock ./
+COPY src/ ./src/
+COPY tests/ ./tests/
 
 EXPOSE 8080
 
-CMD ["serve", "-s", ".", "-l", "8080"]
+CMD ["serve", "-s", "src", "-l", "8080"]
