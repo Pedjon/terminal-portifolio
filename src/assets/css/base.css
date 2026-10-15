@@ -4,138 +4,181 @@
     box-sizing: border-box;
 }
 
+:root {
+    color-scheme: dark;
+    --terminal-height: 100vh;
+    --terminal-padding: 20px;
+
+    /* Ayu Dark palette from the local Zed theme. */
+    --background: #0d1016;
+    --header-background: #1f2127;
+    --border: #2d2f34;
+    --foreground: #bfbdb6;
+    --muted: #8a8986;
+    --accent: #feb454;
+    --link: #5ac1fe;
+    --error: #ef7177;
+    --selection: #5ac1fe3d;
+    --scrollbar-thumb: #bfbdb64c;
+    --scrollbar-hover: #545557;
+}
+
+@supports (height: 100dvh) {
+    :root {
+        --terminal-height: 100dvh;
+    }
+}
+
 body {
-    background-color: #0c0c0c;
-    color: #00d4d4;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: 'Fira Code', monospace;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    height: var(--terminal-height);
+    overflow: hidden;
 }
 
 .terminal {
+    position: fixed;
+    top: var(--terminal-top, 0px);
+    left: 0;
     width: 100%;
-    max-width: 900px;
-    height: 600px;
-    background-color: #0c0c0c;
-    border: 2px solid #00d4d4;
-    border-radius: 8px;
+    height: var(--terminal-height);
+    background-color: var(--background);
     overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 212, 212, 0.3);
+    display: flex;
+    flex-direction: column;
 }
 
 .terminal-header {
-    background-color: #0a1a1a;
-    padding: 10px 15px;
-    border-bottom: 1px solid #00d4d4;
+    background-color: var(--header-background);
+    padding: calc(10px + env(safe-area-inset-top, 0px))
+        calc(15px + env(safe-area-inset-right, 0px))
+        10px calc(15px + env(safe-area-inset-left, 0px));
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 }
 
 .terminal-title {
-    color: #00d4d4;
+    color: var(--muted);
     font-size: 14px;
     font-weight: 500;
 }
 
 .terminal-body {
-    padding: 20px;
-    height: calc(100% - 45px);
-    overflow-y: auto;
+    padding: var(--terminal-padding)
+        calc(var(--terminal-padding) + env(safe-area-inset-right, 0px))
+        calc(var(--terminal-padding) + env(safe-area-inset-bottom, 0px))
+        calc(var(--terminal-padding) + env(safe-area-inset-left, 0px));
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
 #output {
     flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
     margin-bottom: 10px;
 }
 
 .output-line {
     margin-bottom: 8px;
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .command {
-    color: #00d4d4;
+    color: var(--foreground);
     margin-bottom: 5px;
 }
 
 .command .prompt {
-    color: #00d4d4;
+    color: var(--accent);
     font-weight: 500;
 }
 
 .command .command-text {
-    color: #00d4d4;
+    color: var(--foreground);
 }
 
 .response {
-    color: #00b3b3;
+    color: var(--foreground);
     margin-left: 0;
     white-space: pre-wrap;
 }
 
 .error {
-    color: #ff4444;
+    color: var(--error);
 }
 
 .input-line {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .prompt {
-    color: #00d4d4;
+    color: var(--accent);
     font-weight: 500;
     white-space: nowrap;
 }
 
 #input {
     flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
     outline: none;
-    color: #00d4d4;
+    color: var(--foreground);
     font-family: 'Fira Code', monospace;
     font-size: 16px;
-    caret-color: #00d4d4;
+    caret-color: var(--accent);
 }
 
-#input::selection {
-    background-color: #00d4d4;
-    color: #0c0c0c;
+::selection {
+    background-color: var(--selection);
+    color: var(--foreground);
+}
+
+@media (max-width: 480px) {
+    :root {
+        --terminal-padding: 12px;
+    }
 }
 
 /* Scrollbar styling */
-.terminal-body::-webkit-scrollbar {
+#output::-webkit-scrollbar {
     width: 10px;
 }
 
-.terminal-body::-webkit-scrollbar-track {
-    background: #0c0c0c;
+#output::-webkit-scrollbar-track {
+    background: var(--background);
 }
 
-.terminal-body::-webkit-scrollbar-thumb {
-    background: #00d4d4;
+#output::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
     border-radius: 5px;
 }
 
-.terminal-body::-webkit-scrollbar-thumb:hover {
-    background: #00b3b3;
+#output::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-hover);
 }
 
 /* Link styling */
 a {
-    color: #00d4d4;
+    color: var(--link);
     text-decoration: underline;
 }
 
 a:hover {
-    color: #00b3b3;
+    color: var(--accent);
 }
 
 /* Blinking cursor effect */

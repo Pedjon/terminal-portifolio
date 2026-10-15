@@ -9,8 +9,30 @@ function initTerminal() {
   const terminalBody = document.querySelector('.terminal-body');
   const { commandsCol, seedCommands } = initStorage(globalThis.loki);
 
+  const viewport = window.visualViewport;
+  if (viewport) {
+    function updateViewport() {
+      const style = document.documentElement.style;
+
+      // Keep normal browser zoom instead of resizing the terminal to a zoomed view.
+      if (viewport.scale !== 1) {
+        style.removeProperty('--terminal-height');
+        style.removeProperty('--terminal-top');
+        return;
+      }
+
+      style.setProperty('--terminal-height', `${viewport.height}px`);
+      style.setProperty('--terminal-top', `${viewport.offsetTop}px`);
+    }
+
+    viewport.addEventListener('resize', updateViewport);
+    viewport.addEventListener('scroll', updateViewport);
+    window.addEventListener('resize', updateViewport);
+    updateViewport();
+  }
+
   function scrollToBottom() {
-    terminalBody.scrollTop = terminalBody.scrollHeight;
+    output.scrollTop = output.scrollHeight;
   }
 
   function addOutput(text, className = '') {
