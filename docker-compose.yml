@@ -8,6 +8,7 @@ services:
       - ./apps/terminal/src:/app/apps/terminal/src
       - ./apps/terminal/tests:/app/apps/terminal/tests
       - ./apps/terminal/vite.config.js:/app/apps/terminal/vite.config.js:ro
+      - ./packages/content:/app/packages/content
       - ./package.json:/app/package.json:ro
       - ./yarn.lock:/app/yarn.lock:ro
     restart: unless-stopped

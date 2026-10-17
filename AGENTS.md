@@ -3,10 +3,10 @@
 ## Scope and architecture
 
 - This repository is a private Yarn Classic monorepo. The terminal portfolio uses HTML, CSS, and vanilla JavaScript ES modules with Vite for development and static builds.
-- Terminal source and tests live in `apps/terminal/`. There is no backend. The root `package.json` declares workspaces, ES modules, Node 24 or newer, and Yarn Classic 1.22.22.
+- Terminal source and tests live in `apps/terminal/`; structured résumé records live in `packages/content/`. There is no backend. The root `package.json` declares workspaces, ES modules, Node 24 or newer, and Yarn Classic 1.22.22.
 - LokiJS 1.5.12 is loaded from a CDN and holds an in-memory command collection. It does not currently persist data.
 - English (`en`) is the default language; Brazilian Portuguese (`pt-BR`) is also supported.
-- Portfolio content is personalized in both languages, based on the résumé in `docs/portfolio.md` and supplied contact details. The Markdown document is a reference and is not loaded by the website; keep it and the translated content synchronized when updating résumé information. Do not invent personal details when editing it.
+- Portfolio content is personalized in both languages, based on the résumé in `docs/portfolio.md` and supplied contact details. `@portfolio/content` is the runtime source of facts; the Markdown document remains a reference. Keep both synchronized when updating résumé information. Do not invent personal details when editing it.
 
 ## Where to make changes
 
@@ -14,12 +14,15 @@
 | --- | --- |
 | `apps/terminal/src/index.html` | Terminal markup, external assets, and the module entrypoint. |
 | `apps/terminal/src/assets/css/base.css` | Layout, colors, typography, and terminal styling. |
-| `apps/terminal/src/assets/scripts/i18n.js` | Translated UI messages, command descriptions, and portfolio content. |
+| `apps/terminal/src/assets/scripts/i18n.js` | Translated terminal UI messages, command descriptions, titles, and access to formatted content. |
+| `apps/terminal/src/assets/scripts/format-portfolio.js` | Pure formatting of shared résumé records into terminal command output. |
 | `apps/terminal/src/assets/scripts/init-storage.js` | `buildCommands()` generates command records and help; `initStorage(Loki)` explicitly initializes storage. |
 | `apps/terminal/src/assets/scripts/handle-terminal.js` | `createTerminal(...)` returns command processing, history navigation, and completion methods. |
 | `apps/terminal/src/assets/scripts/keyboard-handler.js` | `bindKeyboard(input, terminal)` connects Enter, arrow keys, and Tab to the controller. |
 | `apps/terminal/src/assets/scripts/init-terminal.js` | Browser entrypoint: DOM references, rendering, storage and controller setup, welcome output, and focus. |
-| `docs/portfolio.md` | Résumé reference for the personalized portfolio content; synchronized manually with `i18n.js`. |
+| `packages/content/src/` | Shared bilingual résumé records and the pure `getPortfolio(locale)` / `supportedLocales` API. |
+| `packages/content/tests/` | Content completeness, supported locales, and matching record IDs. |
+| `docs/portfolio.md` | Résumé reference for the personalized portfolio content; synchronized manually with the shared content package. |
 | `apps/terminal/tests/` | Unit tests for translations, command catalogs, and controller behavior. |
 | `apps/terminal/vite.config.js` | Terminal source root and independent static build output. |
 | `Dockerfile` | Node 24 Alpine image with installed workspaces; starts the terminal development server on port 8080. |
@@ -36,7 +39,8 @@
 - Use explicit ES module imports and exports with `.js` extensions. Keep DOM access and browser startup in `init-terminal.js` so reusable modules can be imported by Node without browser globals.
 - Keep LokiJS initialization explicit through `initStorage(Loki)`. The browser passes `globalThis.loki` from the existing CDN script.
 - Keep history inside each controller instance. Inject the command collection and `seedCommands`, `addCommand`, `addOutput`, and `clearOutput` callbacks through `createTerminal(...)`.
-- Keep user-facing content in `i18n.js` and update both languages together.
+- Keep résumé facts in `packages/content/src/en.js` and `pt-BR.js`; update both languages together and use matching stable record IDs. Consume them through `@portfolio/content`, treating returned records as read-only. Keep the package free of browser globals and mutable language state.
+- Keep terminal UI messages and command descriptions in `i18n.js`; use `format-portfolio.js` for text presentation instead of duplicating résumé facts.
 - Register new command names in `cmdNames` in `init-storage.js` and add their descriptions and output in both translation dictionaries. Help and Tab completion use the command collection.
 - Put special command behavior in the controller's `processCommand()` in `handle-terminal.js`.
 - Render user-provided text with `textContent` or DOM nodes.

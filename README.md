@@ -57,6 +57,7 @@ apps/terminal/
   tests/                           Unit tests for core terminal logic
   vite.config.js                   Development server and static build configuration
   package.json                     Terminal workspace and commands
+packages/content/                  Shared structured English and Portuguese résumé records
 docs/portfolio.md                  Résumé reference for personalized content
 package.json                       Private workspace root and repository commands
 yarn.lock                          Shared Yarn Classic lockfile
@@ -70,7 +71,7 @@ Always update the relevant documentation in the same change when adding or chang
 
 Agents should make small, focused commits (micro commits) as work progresses, with one coherent change per commit, including relevant documentation and tests. Run the appropriate checks before committing, commit only files related to the task, and use descriptive commit messages. When work is finished, summarize the changes and validation, then ask whether to push the commits. Wait for explicit approval before pushing unless the user has already authorized the push for the current task.
 
-Portfolio commands contain English and Brazilian Portuguese summaries of the résumé in `docs/portfolio.md`, plus the supplied contact details. Edit both the `en` and `pt-BR` entries in `apps/terminal/src/assets/scripts/i18n.js` when updating the content; the Markdown document is a reference and is not loaded by the website, so changes must be synchronized manually. To add a command, add its name to `cmdNames` in `init-storage.js` and define its translations in both languages. Add special behavior in `handle-terminal.js` when needed.
+Portfolio facts live in the `@portfolio/content` workspace. Edit `packages/content/src/en.js` and `packages/content/src/pt-BR.js` together; see [the content guide](packages/content/README.md) for the record structure and API. The résumé in `docs/portfolio.md` remains a reference and must be synchronized manually when facts change. Terminal UI labels and command descriptions live in `apps/terminal/src/assets/scripts/i18n.js`; `format-portfolio.js` formats shared records into text. To add a command, add its name to `cmdNames` in `init-storage.js` and define its translations in both languages. Add special behavior in `handle-terminal.js` when needed.
 
 The browser loads `init-terminal.js` as its module entrypoint. Reusable modules export translation functions, `buildCommands()`, `initStorage(Loki)`, `createTerminal(...)`, and `bindKeyboard(input, terminal)`. Importing these reusable modules does not access the DOM or initialize LokiJS. Keep browser setup and rendering in the entrypoint.
 
@@ -100,6 +101,6 @@ yarn test
 
 Install workspace dependencies first with `yarn install --frozen-lockfile`. The suite uses Node's built-in test runner and assertions. You can also run it directly with `node --test`.
 
-Tests cover translations, command catalog and help generation, command execution, language switching, history, and completion. Each terminal controller receives a command collection and rendering callbacks, so its logic can be tested without a browser or LokiJS.
+Tests cover shared content completeness and locale parity, translations, command catalog and help generation, command execution, language switching, history, and completion. Each terminal controller receives a command collection and rendering callbacks, so its logic can be tested without a browser or LokiJS.
 
 Rendering, focus, keyboard event wiring, and browser module loading still need a browser smoke check. Run `yarn build` to verify production bundling. There is no lint command configured.
