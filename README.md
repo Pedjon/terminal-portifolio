@@ -1,8 +1,8 @@
 # Portfolio
 
-A personal portfolio presented as an interactive terminal. Visitors type commands to explore information about the developer, skills, projects, education, experience, and contact details.
+A bilingual portfolio with two presentations: an interactive terminal for developers and a conventional website for recruiters and hiring teams. Both use the same résumé records and can be built and hosted independently. The terminal remains the main portfolio experience.
 
-Organized as a Yarn Classic workspace. The terminal uses plain HTML, CSS, and JavaScript ES modules, with Vite for development and static production builds. LokiJS stores the command catalog in memory. There is no backend.
+Organized as a Yarn Classic monorepo. The terminal uses vanilla JavaScript and Vite; the website uses Astro to generate static HTML. LokiJS stores the terminal command catalog in memory. There is no backend.
 
 ## Run locally
 
@@ -20,16 +20,34 @@ To stop and remove the container:
 docker compose down
 ```
 
-Alternatively, install Node.js 24 or newer and Yarn Classic 1.22.22, then run from the repository root:
+To run both apps locally, install Node.js 24 or newer and Yarn Classic 1.22.22, then run from the repository root:
 
 ```sh
 yarn install --frozen-lockfile
-yarn dev:terminal
+yarn dev
 ```
 
 LokiJS loads from jsDelivr and Fira Code loads from Google Fonts, so an internet connection is needed to load these external assets.
 
 Run `yarn build:terminal` to generate `apps/terminal/dist/`. Preview that output with `yarn workspace @portfolio/terminal preview`, or serve it with `python3 -m http.server 8080 --directory apps/terminal/dist`. The source now requires Vite; Python is suitable for the built output.
+
+| Command | Purpose |
+| --- | --- |
+| `yarn dev` | Start both apps; stop both with Ctrl+C. |
+| `yarn dev:terminal` | Start the terminal at `http://localhost:8080`. |
+| `yarn dev:web` | Start the website at `http://localhost:8081`. |
+| `yarn build` | Build both apps. |
+| `yarn build:terminal` | Build the terminal into `apps/terminal/dist/`. |
+| `yarn build:web` | Build the website into `apps/web/dist/`. |
+| `yarn test` | Run all workspace unit tests. |
+
+## Conventional website
+
+The website introduces the developer, work experience, selected projects, skills, education, and contact links on one responsive page. English is available at `/`; Brazilian Portuguese is at `/pt-br/`. Navigation, contact links, and expandable role details work without JavaScript.
+
+The website follows the system light/dark preference until the visitor uses the theme control. Explicit choices are saved in browser local storage and applied before first paint. If storage is unavailable, the control still works for the current page. With JavaScript disabled, the website follows the system preference and hides the theme control.
+
+Set `PUBLIC_TERMINAL_URL` in `apps/web/.env` before a production build to point the website's terminal links at the independently hosted terminal. Start from `apps/web/.env.example`; the development default is `http://localhost:8080/`. See [the deployment guide](docs/deployment.md) for independent static builds.
 
 ## Commands
 
@@ -57,6 +75,13 @@ apps/terminal/
   tests/                           Unit tests for core terminal logic
   vite.config.js                   Development server and static build configuration
   package.json                     Terminal workspace and commands
+apps/web/
+  src/pages/                       English and Portuguese static routes
+  src/components/                  Shared portfolio page and section heading
+  src/scripts/                     Website labels, links, and theme control
+  src/styles/global.css            Responsive light and dark themes
+  tests/                           Website labels, navigation, and theme tests
+  astro.config.mjs                 Static build configuration
 packages/content/                  Shared structured English and Portuguese résumé records
 docs/portfolio.md                  Résumé reference for personalized content
 package.json                       Private workspace root and repository commands
@@ -103,4 +128,4 @@ Install workspace dependencies first with `yarn install --frozen-lockfile`. The 
 
 Tests cover shared content completeness and locale parity, translations, command catalog and help generation, command execution, language switching, history, and completion. Each terminal controller receives a command collection and rendering callbacks, so its logic can be tested without a browser or LokiJS.
 
-Rendering, focus, keyboard event wiring, and browser module loading still need a browser smoke check. Run `yarn build` to verify production bundling. There is no lint command configured.
+Website tests cover translated UI labels, cross-origin terminal links, and theme preference selection. Browser smoke checks should cover both languages, desktop and narrow layouts, theme persistence, a blocked-storage context, and the website with JavaScript disabled. Also check terminal rendering, focus, and keyboard event wiring. Run `yarn build` to verify both independent production outputs. There is no lint command configured.

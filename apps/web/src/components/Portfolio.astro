@@ -1,0 +1,196 @@
+---
+import { getPortfolio } from '@portfolio/content';
+import SectionHeading from './SectionHeading.astro';
+import { getMessages } from '../scripts/i18n.js';
+import { getTerminalUrl } from '../scripts/navigation.js';
+import '../styles/global.css';
+
+const { locale = 'en' } = Astro.props;
+const portfolio = getPortfolio(locale);
+const ui = getMessages(locale);
+const currentRole = portfolio.experience[0];
+const terminalUrl = getTerminalUrl(import.meta.env.PUBLIC_TERMINAL_URL || 'http://localhost:8080/', locale);
+const navigation = [
+  { href: '#experience', label: ui.experience },
+  { href: '#projects', label: ui.projects },
+  { href: '#contact', label: ui.contact }
+];
+const title = `${portfolio.profile.name} — ${portfolio.profile.role}`;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={ui.pageDescription} />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={ui.pageDescription} />
+    <meta property="og:type" content="website" />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      (() => {
+        let preference;
+        try { preference = localStorage.getItem('portfolio-theme'); } catch {}
+        document.documentElement.dataset.theme = preference === 'light' || preference === 'dark'
+          ? preference : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      })();
+    </script>
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main">{ui.skipLink}</a>
+
+    <header class="site-header">
+      <div class="header-inner container">
+        <a class="brand" href="#top" aria-label={portfolio.profile.name}>
+          {portfolio.profile.name}<span aria-hidden="true">.</span>
+        </a>
+
+        <nav class="main-nav" aria-label={ui.navigation}>
+          {navigation.map(link => <a href={link.href}>{link.label}</a>)}
+        </nav>
+
+        <div class="header-controls">
+          <nav class="language-switch" aria-label={ui.language}>
+            <a href="/" lang="en" hreflang="en" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
+            <span aria-hidden="true">/</span>
+            <a href="/pt-br/" lang="pt-BR" hreflang="pt-BR" aria-current={locale === 'pt-BR' ? 'page' : undefined}>PT</a>
+          </nav>
+
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-label={ui.darkTheme}
+            aria-pressed="false" data-light-label={ui.light} data-dark-label={ui.dark} hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" />
+            </svg>
+            <span data-theme-label>{ui.light}</span>
+          </button>
+
+          <a class="terminal-link" href={terminalUrl} aria-label={ui.terminal}>
+            <span class="terminal-symbol" aria-hidden="true">&gt;_</span>
+            <span>{ui.terminalShort}</span>
+            <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container">
+      <section id="about" class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span>{portfolio.profile.role}</p>
+          <h1>{portfolio.profile.name}<span class="name-period">.</span></h1>
+          <p class="hero-headline">{ui.headline}<br /><em>{ui.headlineAccent}</em></p>
+          <p class="hero-summary">{portfolio.profile.paragraphs[0]}</p>
+          <div class="hero-actions">
+            <a class="button" href={`mailto:${portfolio.contact.email}`}>{ui.contactAction}<span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="#experience">{ui.experienceAction}<span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+
+        <aside class="profile-card" aria-label={ui.currentRole}>
+          <div class="card-topline">
+            <span class="eyebrow">{ui.currentRole}</span>
+            <span class="card-mark" aria-hidden="true">↗</span>
+          </div>
+          <p class="current-company">{currentRole.organization}</p>
+          <p class="current-title">{currentRole.role}</p>
+          <p class="current-period">{currentRole.period}</p>
+          <div class="profile-location">
+            <span class="eyebrow">{ui.basedIn}</span>
+            <p>{portfolio.contact.location}</p>
+          </div>
+          <a class="text-link" href={portfolio.contact.linkedin}>LinkedIn<span aria-hidden="true">↗</span></a>
+        </aside>
+      </section>
+
+      <section class="approach" aria-labelledby="approach-title">
+        <p id="approach-title" class="eyebrow">{ui.approach}</p>
+        <p>{portfolio.profile.paragraphs.at(-1)}</p>
+      </section>
+
+      <section id="experience" class="section-block">
+        <SectionHeading number="01" title={ui.experience} description={ui.experienceIntro} />
+        <div class="experience-list">
+          {portfolio.experience.map((entry, index) => (
+            <article class="experience-entry">
+              <div class="experience-date"><span class:list={['timeline-dot', { current: index === 0 }]} aria-hidden="true"></span>{entry.period}</div>
+              <div class="experience-content">
+                <h3>{entry.organization}</h3>
+                <p class="role-name">{entry.role}</p>
+                <p>{entry.highlights[0]}</p>
+                {entry.highlights.length > 1 && (
+                  <details>
+                    <summary>{ui.moreRole}<span aria-hidden="true">+</span></summary>
+                    <ul class="detail-list">{entry.highlights.slice(1).map(highlight => <li>{highlight}</li>)}</ul>
+                  </details>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="projects" class="section-block">
+        <SectionHeading number="02" title={ui.projects} description={ui.projectsIntro} />
+        <div class="project-grid">
+          {portfolio.projects.map((project, index) => (
+            <article class="project">
+              <div class="project-topline"><span class="eyebrow">{project.organization}</span><span class="project-index" aria-hidden="true">0{index + 1}</span></div>
+              <h3>{project.title}</h3>
+              <p>{project.highlights[0]}</p>
+              <ul class="project-highlights">{project.highlights.slice(1).map(highlight => <li>{highlight}</li>)}</ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="skills" class="section-block">
+        <SectionHeading number="03" title={ui.skills} description={ui.skillsIntro} />
+        <div class="skills-grid">
+          {portfolio.skills.map(group => (
+            <div class="skill-group">
+              <h3>{group.label}</h3>
+              <ul>{group.items.map(item => <li>{item}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="education" class="section-block">
+        <SectionHeading number="04" title={ui.education} />
+        <div class="education-grid">
+          {portfolio.education.map(entry => (
+            <article class="education-entry">
+              <span class="education-year">{entry.year}</span>
+              <div><h3>{entry.qualification}</h3><p>{entry.institution}</p></div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="contact" class="contact-section" aria-labelledby="contact-title">
+        <p class="eyebrow">05 / {ui.contact}</p>
+        <h2 id="contact-title">{ui.contactTitle}</h2>
+        <p class="contact-intro">{ui.contactIntro}</p>
+        <a class="contact-email" href={`mailto:${portfolio.contact.email}`}>{portfolio.contact.email}<span aria-hidden="true">↗</span></a>
+        <div class="contact-bottom">
+          <a class="text-link" href={portfolio.contact.linkedin}>LinkedIn<span aria-hidden="true">↗</span></a>
+          <p>{ui.preferTerminal} <a href={terminalUrl}>{ui.exploreTerminal}<span aria-hidden="true"> ↗</span></a></p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer container">
+      <p>© {new Date().getFullYear()} {portfolio.profile.name}</p>
+      <a class="text-link" href="#top">{ui.backToTop}<span aria-hidden="true">↑</span></a>
+    </footer>
+
+    <script>
+      import { initTheme } from '../scripts/theme.js';
+      initTheme();
+    </script>
+  </body>
+</html>

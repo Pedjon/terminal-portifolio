@@ -2,10 +2,11 @@
 
 ## Scope and architecture
 
-- This repository is a private Yarn Classic monorepo. The terminal portfolio uses HTML, CSS, and vanilla JavaScript ES modules with Vite for development and static builds.
+- This repository is a private Yarn Classic monorepo with two independently deployable static apps. The terminal uses HTML, CSS, and vanilla JavaScript ES modules with Vite; the conventional portfolio uses Astro.
 - Terminal source and tests live in `apps/terminal/`; structured résumé records live in `packages/content/`. There is no backend. The root `package.json` declares workspaces, ES modules, Node 24 or newer, and Yarn Classic 1.22.22.
 - LokiJS 1.5.12 is loaded from a CDN and holds an in-memory command collection. It does not currently persist data.
 - English (`en`) is the default language; Brazilian Portuguese (`pt-BR`) is also supported.
+- The website lives in `apps/web/`, renders the shared records as HTML, and provides light/dark themes. Its English route is `/`; Portuguese is `/pt-br/`. Keep content and navigation usable without JavaScript.
 - Portfolio content is personalized in both languages, based on the résumé in `docs/portfolio.md` and supplied contact details. `@portfolio/content` is the runtime source of facts; the Markdown document remains a reference. Keep both synchronized when updating résumé information. Do not invent personal details when editing it.
 
 ## Where to make changes
@@ -25,6 +26,11 @@
 | `docs/portfolio.md` | Résumé reference for the personalized portfolio content; synchronized manually with the shared content package. |
 | `apps/terminal/tests/` | Unit tests for translations, command catalogs, and controller behavior. |
 | `apps/terminal/vite.config.js` | Terminal source root and independent static build output. |
+| `apps/web/src/pages/` | Static English and Portuguese entrypoints. |
+| `apps/web/src/components/Portfolio.astro` | Website layout, résumé presentation, semantic navigation, and localized metadata. |
+| `apps/web/src/scripts/` | Website UI translations, terminal URL generation, and theme behavior. |
+| `apps/web/src/styles/global.css` | Responsive website layout and light/dark color tokens. |
+| `apps/web/tests/` | Website language completeness, navigation, and theme tests. |
 | `Dockerfile` | Node 24 Alpine image with installed workspaces; starts the terminal development server on port 8080. |
 | `docker-compose.yml` | Local container setup with terminal source, tests, and Vite configuration mounted under `/app/apps/terminal`. |
 
@@ -41,6 +47,8 @@
 - Keep history inside each controller instance. Inject the command collection and `seedCommands`, `addCommand`, `addOutput`, and `clearOutput` callbacks through `createTerminal(...)`.
 - Keep résumé facts in `packages/content/src/en.js` and `pt-BR.js`; update both languages together and use matching stable record IDs. Consume them through `@portfolio/content`, treating returned records as read-only. Keep the package free of browser globals and mutable language state.
 - Keep terminal UI messages and command descriptions in `i18n.js`; use `format-portfolio.js` for text presentation instead of duplicating résumé facts.
+- Keep website UI text in `apps/web/src/scripts/i18n.js`, update both languages together, and render shared records through Astro components. Do not duplicate résumé facts in templates.
+- Keep theme preference storage defensive. Apply the saved website theme before first paint; without a saved choice, follow the system preference. Native links and role details must work without JavaScript.
 - Register new command names in `cmdNames` in `init-storage.js` and add their descriptions and output in both translation dictionaries. Help and Tab completion use the command collection.
 - Put special command behavior in the controller's `processCommand()` in `handle-terminal.js`.
 - Render user-provided text with `textContent` or DOM nodes.
@@ -51,6 +59,8 @@
 Run `docker compose up --build` from the repository root, then open `http://localhost:8080`. Source edits are visible after refreshing the browser. Run `docker compose down` to stop and remove the container.
 
 Without Docker, install Node.js 24 or newer and Yarn Classic 1.22.22. Run `yarn install --frozen-lockfile`, then `yarn dev:terminal` from the repository root. Run `yarn build:terminal` to produce `apps/terminal/dist/`, which can be served with `python3 -m http.server 8080 --directory apps/terminal/dist`. The browser needs internet access to load the CDN dependencies.
+
+Run `yarn dev` for both apps, or `yarn dev:web` for the conventional website on port 8081. `yarn build:web` produces a separate `apps/web/dist/` directory. Configure `PUBLIC_TERMINAL_URL` before building the website for production; it defaults to localhost for development. See `docs/deployment.md`.
 
 To test inside the running portfolio container, use `docker compose exec terminal-portifolio yarn test`. After changing the Dockerfile or Compose configuration, rebuild and recreate it with `docker compose up --build -d`. To test without starting the website, use `docker compose run --rm --build --no-deps terminal-portifolio yarn test`; it runs a disposable container without publishing the website's port.
 
@@ -67,5 +77,7 @@ Run `yarn build` after changing application code or build configuration. There i
 5. Command history with Up/Down and single-match Tab completion.
 6. `clear` and entering another command afterward.
 7. Browser console errors and layout at desktop and narrow viewport widths.
+
+For the website, check both locales, section navigation, contact links, light/dark system preferences, saved theme choices, storage failure, and no-JavaScript rendering. Run shared content tests and website tests through the root `yarn test` command.
 
 For documentation-only changes, review instructions against the source and run `git diff --check`. When reporting work, state what was checked and any validation that could not be completed.

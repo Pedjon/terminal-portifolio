@@ -8,10 +8,15 @@
   },
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "yarn dev:terminal",
+    "dev": "concurrently --kill-others --names terminal,web \"yarn dev:terminal\" \"yarn dev:web\"",
     "dev:terminal": "yarn workspace @portfolio/terminal dev",
-    "build": "yarn build:terminal",
+    "dev:web": "yarn workspace @portfolio/web dev",
+    "build": "yarn build:terminal && yarn build:web",
     "build:terminal": "yarn workspace @portfolio/terminal build",
+    "build:web": "yarn workspace @portfolio/web build",
     "test": "node --test"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6"
   }
 }

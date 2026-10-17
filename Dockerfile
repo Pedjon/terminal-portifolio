@@ -4,11 +4,13 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 COPY apps/terminal/package.json ./apps/terminal/package.json
+COPY apps/web/package.json ./apps/web/package.json
 COPY packages/content/package.json ./packages/content/package.json
 
 RUN yarn install --frozen-lockfile --non-interactive
 
 COPY apps/terminal/ ./apps/terminal/
+COPY apps/web/ ./apps/web/
 COPY packages/content/ ./packages/content/
 
 EXPOSE 8080

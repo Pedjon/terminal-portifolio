@@ -1,0 +1,11 @@
+---
+const { number, title, description } = Astro.props;
+---
+
+<div class="section-heading">
+  <div class="section-title">
+    <span class="section-number" aria-hidden="true">{number}</span>
+    <h2>{title}</h2>
+  </div>
+  {description && <p>{description}</p>}
+</div>
