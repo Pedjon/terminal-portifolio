@@ -66,7 +66,7 @@ docker-compose.yml                 Local container configuration
 
 ## Development
 
-Portfolio content is currently placeholder text. Edit both the `en` and `pt-BR` entries in `src/assets/scripts/i18n.js` to personalize it. To add a command, add its name to `cmdNames` in `init-storage.js` and define its translations in both languages. Add special behavior in `handle-terminal.js` when needed.
+Portfolio commands contain English and Brazilian Portuguese summaries of the résumé in `docs/portfolio.md`, plus the supplied contact details. Edit both the `en` and `pt-BR` entries in `src/assets/scripts/i18n.js` when updating the content; the Markdown document is a reference and is not loaded by the website, so changes must be synchronized manually. To add a command, add its name to `cmdNames` in `init-storage.js` and define its translations in both languages. Add special behavior in `handle-terminal.js` when needed.
 
 The browser loads `init-terminal.js` as its module entrypoint. Reusable modules export translation functions, `buildCommands()`, `initStorage(Loki)`, `createTerminal(...)`, and `bindKeyboard(input, terminal)`. Importing these reusable modules does not access the DOM or initialize LokiJS. Keep browser setup and rendering in the entrypoint.
 
