@@ -1,8 +1,17 @@
 {
+  "name": "portfolio",
   "private": true,
   "type": "module",
   "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
+    "dev": "yarn dev:terminal",
+    "dev:terminal": "yarn workspace @portfolio/terminal dev",
+    "build": "yarn build:terminal",
+    "build:terminal": "yarn workspace @portfolio/terminal build",
     "test": "node --test"
   }
 }
