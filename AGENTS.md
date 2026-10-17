@@ -28,6 +28,8 @@
 
 - Keep changes focused and follow the formatting of the file being edited.
 - Always update the relevant documentation in the same change when adding or changing a feature. Update `README.md` for user-facing behavior, commands, and setup; update `AGENTS.md` for architecture, development conventions, and validation requirements; update other affected documents as needed. Treat documentation updates as part of completing feature work.
+- Make small, focused commits (micro commits) as work progresses. Each commit should cover one coherent change, include its relevant documentation and tests, and pass the checks appropriate to that change. Commit only files related to the task and use clear, descriptive commit messages.
+- When the work is finished, summarize the changes and validation, then ask the user whether to push the commits. Wait for explicit approval before pushing unless the user has already authorized the push for the current task.
 - Use Yarn Classic 1.22.22 for package commands and keep `yarn.lock` updated when dependencies change.
 - Use the existing plain JavaScript and CSS approach unless the task calls for an architecture change.
 - Use explicit ES module imports and exports with `.js` extensions. Keep DOM access and browser startup in `init-terminal.js` so reusable modules can be imported by Node without browser globals.
