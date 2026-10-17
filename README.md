@@ -57,6 +57,7 @@ src/
       handle-terminal.js           Command execution, history, and completion
       keyboard-handler.js          Keyboard event bindings
       init-terminal.js             Browser entrypoint, rendering, and input focus
+docs/portfolio.md                  Résumé reference for personalized content
 tests/                             Unit tests for core application logic
 package.json                       ES module configuration and test command
 yarn.lock                          Yarn dependency lockfile
@@ -65,6 +66,8 @@ docker-compose.yml                 Local container configuration
 ```
 
 ## Development
+
+Always update the relevant documentation in the same change when adding or changing a feature. Keep this README current for user-facing behavior, commands, and setup, and update `AGENTS.md` when architecture, development conventions, or validation requirements change. Update other affected documents as needed; documentation is part of completing feature work.
 
 Portfolio commands contain English and Brazilian Portuguese summaries of the résumé in `docs/portfolio.md`, plus the supplied contact details. Edit both the `en` and `pt-BR` entries in `src/assets/scripts/i18n.js` when updating the content; the Markdown document is a reference and is not loaded by the website, so changes must be synchronized manually. To add a command, add its name to `cmdNames` in `init-storage.js` and define its translations in both languages. Add special behavior in `handle-terminal.js` when needed.
 

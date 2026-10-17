@@ -6,7 +6,7 @@
 - Application files live in `src/`. There is no backend or bundler. The root `package.json` declares ES modules, Yarn Classic 1.22.22, and the test command.
 - LokiJS 1.5.12 is loaded from a CDN and holds an in-memory command collection. It does not currently persist data.
 - English (`en`) is the default language; Brazilian Portuguese (`pt-BR`) is also supported.
-- Portfolio content is placeholder text. Do not invent personal details when editing it.
+- Portfolio content is personalized in both languages, based on the résumé in `docs/portfolio.md` and supplied contact details. The Markdown document is a reference and is not loaded by the website; keep it and the translated content synchronized when updating résumé information. Do not invent personal details when editing it.
 
 ## Where to make changes
 
@@ -19,6 +19,7 @@
 | `src/assets/scripts/handle-terminal.js` | `createTerminal(...)` returns command processing, history navigation, and completion methods. |
 | `src/assets/scripts/keyboard-handler.js` | `bindKeyboard(input, terminal)` connects Enter, arrow keys, and Tab to the controller. |
 | `src/assets/scripts/init-terminal.js` | Browser entrypoint: DOM references, rendering, storage and controller setup, welcome output, and focus. |
+| `docs/portfolio.md` | Résumé reference for the personalized portfolio content; synchronized manually with `i18n.js`. |
 | `tests/` | Unit tests for translations, command catalogs, and controller behavior. |
 | `Dockerfile` | Node 24 Alpine image with source, tests, and package files; serves only `src` on port 8080. |
 | `docker-compose.yml` | Local container setup with source and tests mounted at `/app/src` and `/app/tests`, plus the package manifest and lockfile. |
@@ -26,6 +27,7 @@
 ## Development conventions
 
 - Keep changes focused and follow the formatting of the file being edited.
+- Always update the relevant documentation in the same change when adding or changing a feature. Update `README.md` for user-facing behavior, commands, and setup; update `AGENTS.md` for architecture, development conventions, and validation requirements; update other affected documents as needed. Treat documentation updates as part of completing feature work.
 - Use Yarn Classic 1.22.22 for package commands and keep `yarn.lock` updated when dependencies change.
 - Use the existing plain JavaScript and CSS approach unless the task calls for an architecture change.
 - Use explicit ES module imports and exports with `.js` extensions. Keep DOM access and browser startup in `init-terminal.js` so reusable modules can be imported by Node without browser globals.
