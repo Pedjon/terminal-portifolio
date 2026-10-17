@@ -16,6 +16,7 @@ export function bindKeyboard(input, terminal) {
         input.value = terminal.nextCommand();
         break;
       case 'Tab':
+        if (e.shiftKey) break;
         e.preventDefault();
         input.value = terminal.completeCommand(input.value);
         break;

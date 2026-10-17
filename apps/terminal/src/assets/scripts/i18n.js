@@ -5,6 +5,9 @@ let currentLang = 'en';
 
 const translations = {
   en: {
+    pageTitle: 'Portfolio - Terminal',
+    websiteLink: 'Website portfolio',
+    inputLabel: 'Terminal command',
     welcome: `
 Welcome to my Portfolio Terminal!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -51,6 +54,9 @@ Type any command and press Enter to interact.
     }
   },
   'pt-BR': {
+    pageTitle: 'Portfólio - Terminal',
+    websiteLink: 'Portfólio web',
+    inputLabel: 'Comando do terminal',
     welcome: `
 Bem-vindo ao meu Terminal Portfólio!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

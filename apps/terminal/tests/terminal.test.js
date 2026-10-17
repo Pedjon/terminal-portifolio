@@ -4,7 +4,7 @@ import { createTerminal } from '../src/assets/scripts/handle-terminal.js';
 import { getLang, setLang, t } from '../src/assets/scripts/i18n.js';
 import { buildCommands } from '../src/assets/scripts/init-storage.js';
 
-function setupTerminal() {
+function setupTerminal({ onLanguageChange } = {}) {
   let commands = buildCommands();
   const seedCommands = mock.fn(() => { commands = buildCommands(); });
   const addCommand = mock.fn();
@@ -18,7 +18,8 @@ function setupTerminal() {
     seedCommands,
     addCommand,
     addOutput,
-    clearOutput
+    clearOutput,
+    onLanguageChange
   });
 
   return { terminal, seedCommands, addCommand, addOutput, clearOutput };
@@ -89,6 +90,25 @@ test('switches languages, refreshes the catalog, and uses translated output imme
   }
 
   assert.equal(seedCommands.mock.callCount(), 2);
+});
+
+test('notifies the browser after the language and command catalog have changed', () => {
+  const onLanguageChange = mock.fn(locale => {
+    assert.equal(getLang(), locale);
+    assert.ok(buildCommands().find(command => command.name === 'help').output.startsWith(t('helpHeader')));
+  });
+  const { terminal, seedCommands } = setupTerminal({ onLanguageChange });
+  terminal.processCommand('lang pt-BR');
+  terminal.processCommand('lang en');
+  assert.deepEqual(onLanguageChange.mock.calls.map(call => call.arguments), [['pt-BR'], ['en']]);
+  assert.equal(seedCommands.mock.callCount(), 2);
+});
+
+test('does not notify language changes for invalid arguments or other commands', () => {
+  const onLanguageChange = mock.fn();
+  const { terminal } = setupTerminal({ onLanguageChange });
+  for (const command of ['lang', 'lang fr', 'lang en extra', 'about', 'missing']) terminal.processCommand(command);
+  assert.equal(onLanguageChange.mock.callCount(), 0);
 });
 
 for (const language of ['en', 'pt-BR']) {

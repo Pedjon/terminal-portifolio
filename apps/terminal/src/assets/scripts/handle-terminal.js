@@ -1,6 +1,6 @@
 import { setLang, t } from './i18n.js';
 
-export function createTerminal({ commandsCol, seedCommands, addCommand, addOutput, clearOutput }) {
+export function createTerminal({ commandsCol, seedCommands, addCommand, addOutput, clearOutput, onLanguageChange = () => {} }) {
   const commandHistory = [];
   let historyIndex = -1;
 
@@ -18,6 +18,7 @@ export function createTerminal({ commandsCol, seedCommands, addCommand, addOutpu
         const lang = parts[1] === 'pt-br' ? 'pt-BR' : parts[1];
         setLang(lang);
         seedCommands();
+        onLanguageChange(lang);
         addOutput(t('langChanged')(lang), 'response');
       } else {
         addOutput(t('langUsage'), 'response');

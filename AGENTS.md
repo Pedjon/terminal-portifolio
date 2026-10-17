@@ -18,9 +18,10 @@
 | `apps/terminal/src/assets/scripts/i18n.js` | Translated terminal UI messages, command descriptions, titles, and access to formatted content. |
 | `apps/terminal/src/assets/scripts/format-portfolio.js` | Pure formatting of shared résumé records into terminal command output. |
 | `apps/terminal/src/assets/scripts/init-storage.js` | `buildCommands()` generates command records and help; `initStorage(Loki)` explicitly initializes storage. |
-| `apps/terminal/src/assets/scripts/handle-terminal.js` | `createTerminal(...)` returns command processing, history navigation, and completion methods. |
+| `apps/terminal/src/assets/scripts/handle-terminal.js` | Command processing, history, completion, and the optional `onLanguageChange(locale)` browser callback. |
 | `apps/terminal/src/assets/scripts/keyboard-handler.js` | `bindKeyboard(input, terminal)` connects Enter, arrow keys, and Tab to the controller. |
 | `apps/terminal/src/assets/scripts/init-terminal.js` | Browser entrypoint: DOM references, rendering, storage and controller setup, welcome output, and focus. |
+| `apps/terminal/src/assets/scripts/navigation.js` | Incoming locale selection and links to the independently hosted website. |
 | `packages/content/src/` | Shared bilingual résumé records and the pure `getPortfolio(locale)` / `supportedLocales` API. |
 | `packages/content/tests/` | Content completeness, supported locales, and matching record IDs. |
 | `docs/portfolio.md` | Résumé reference for the personalized portfolio content; synchronized manually with the shared content package. |
@@ -31,8 +32,9 @@
 | `apps/web/src/scripts/` | Website UI translations, terminal URL generation, and theme behavior. |
 | `apps/web/src/styles/global.css` | Responsive website layout and light/dark color tokens. |
 | `apps/web/tests/` | Website language completeness, navigation, and theme tests. |
-| `Dockerfile` | Node 24 Alpine image with installed workspaces; starts the terminal development server on port 8080. |
-| `docker-compose.yml` | Local container setup with terminal source, tests, and Vite configuration mounted under `/app/apps/terminal`. |
+| `docs/deployment.md` | Independent build commands, URL environment variables, and static preview instructions. |
+| `Dockerfile` | Node 24 Alpine development image with all workspace dependencies. |
+| `docker-compose.yml` | Separate terminal and website services on ports 8080 and 8081, with app source, tests, and shared content mounted. |
 
 ## Development conventions
 
@@ -45,28 +47,32 @@
 - Use explicit ES module imports and exports with `.js` extensions. Keep DOM access and browser startup in `init-terminal.js` so reusable modules can be imported by Node without browser globals.
 - Keep LokiJS initialization explicit through `initStorage(Loki)`. The browser passes `globalThis.loki` from the existing CDN script.
 - Keep history inside each controller instance. Inject the command collection and `seedCommands`, `addCommand`, `addOutput`, and `clearOutput` callbacks through `createTerminal(...)`.
+- Use the optional `onLanguageChange(locale)` callback for terminal browser updates after successful language changes. Initialize incoming language before storage, and keep DOM access in the browser entrypoint.
 - Keep résumé facts in `packages/content/src/en.js` and `pt-BR.js`; update both languages together and use matching stable record IDs. Consume them through `@portfolio/content`, treating returned records as read-only. Keep the package free of browser globals and mutable language state.
 - Keep terminal UI messages and command descriptions in `i18n.js`; use `format-portfolio.js` for text presentation instead of duplicating résumé facts.
 - Keep website UI text in `apps/web/src/scripts/i18n.js`, update both languages together, and render shared records through Astro components. Do not duplicate résumé facts in templates.
 - Keep theme preference storage defensive. Apply the saved website theme before first paint; without a saved choice, follow the system preference. Native links and role details must work without JavaScript.
+- Keep Astro development and preview commands in the foreground with `--ignore-lock`, so `concurrently` and Docker own startup and shutdown even when an agent is detected. Keep strict development ports to avoid silently starting on a different port.
 - Register new command names in `cmdNames` in `init-storage.js` and add their descriptions and output in both translation dictionaries. Help and Tab completion use the command collection.
 - Put special command behavior in the controller's `processCommand()` in `handle-terminal.js`.
 - Render user-provided text with `textContent` or DOM nodes.
 - Preserve keyboard interaction and check usability at narrow viewport widths when changing the interface.
+- Configure cross-app links through `VITE_WEB_URL` (terminal) and `PUBLIC_TERMINAL_URL` (website). Keep locale selection intact when switching apps; terminal query parameters select the initial language, and website languages use static routes. Never hardcode production domains.
+- Keep the terminal Vite `envDir` at the workspace root, despite its `src` application root. Its HTML transform embeds the default website link before JavaScript runs; browser startup updates that link for the selected locale.
 
 ## Run and validate
 
-Run `docker compose up --build` from the repository root, then open `http://localhost:8080`. Source edits are visible after refreshing the browser. Run `docker compose down` to stop and remove the container.
+Run `docker compose up --build` from the repository root, then open the terminal at `http://localhost:8080` and the website at `http://localhost:8081`. Source changes in either app or the shared package trigger live reload. Run `docker compose down` to stop and remove the containers. Rebuild after changes to dependency manifests, the lockfile, Dockerfile, or Compose configuration.
 
 Without Docker, install Node.js 24 or newer and Yarn Classic 1.22.22. Run `yarn install --frozen-lockfile`, then `yarn dev:terminal` from the repository root. Run `yarn build:terminal` to produce `apps/terminal/dist/`, which can be served with `python3 -m http.server 8080 --directory apps/terminal/dist`. The browser needs internet access to load the CDN dependencies.
 
-Run `yarn dev` for both apps, or `yarn dev:web` for the conventional website on port 8081. `yarn build:web` produces a separate `apps/web/dist/` directory. Configure `PUBLIC_TERMINAL_URL` before building the website for production; it defaults to localhost for development. See `docs/deployment.md`.
+Run `yarn dev` for both apps, or `yarn dev:web` for the conventional website on port 8081. `yarn build:web` produces a separate `apps/web/dist/` directory. Configure `VITE_WEB_URL` and `PUBLIC_TERMINAL_URL` before production builds; they default to the other app's localhost URL in development. See `docs/deployment.md`.
 
 To test inside the running portfolio container, use `docker compose exec terminal-portifolio yarn test`. After changing the Dockerfile or Compose configuration, rebuild and recreate it with `docker compose up --build -d`. To test without starting the website, use `docker compose run --rm --build --no-deps terminal-portifolio yarn test`; it runs a disposable container without publishing the website's port.
 
 With dependencies installed locally, run `yarn test` (or `node --test`) from the repository root. Tests use `node:test` and `node:assert/strict` with direct imports of application modules.
 
-Add unit tests under `apps/terminal/tests/` for changes to core behavior. Reset the language to English before each test and create fresh controllers and command catalogs for isolation. Controller tests use a small collection substitute backed by `buildCommands()` and mock rendering callbacks; they do not require a DOM emulator or LokiJS.
+Add unit tests under the relevant workspace's `tests/` directory for changes to core behavior. Reset the terminal language to English before each terminal test and create fresh controllers and command catalogs for isolation. Controller tests use a small collection substitute backed by `buildCommands()` and mock rendering callbacks; they do not require a DOM emulator or LokiJS.
 
 Run `yarn build` after changing application code or build configuration. There is no lint command configured. Browser setup, rendering, focus, and event wiring receive a smoke check when affected. A broader browser check should cover:
 
@@ -77,6 +83,7 @@ Run `yarn build` after changing application code or build configuration. There i
 5. Command history with Up/Down and single-match Tab completion.
 6. `clear` and entering another command afterward.
 7. Browser console errors and layout at desktop and narrow viewport widths.
+8. Website links after language commands, incoming `?lang=pt-BR`, unsupported locale fallback, and Shift+Tab focus navigation.
 
 For the website, check both locales, section navigation, contact links, light/dark system preferences, saved theme choices, storage failure, and no-JavaScript rendering. Run shared content tests and website tests through the root `yarn test` command.
 

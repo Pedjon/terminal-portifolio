@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
     <title>Portfolio - Terminal</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,12 +14,13 @@
     <div class="terminal">
         <div class="terminal-header">
             <span class="terminal-title">pedro@portfolio:~</span>
+            <a id="website-link" href="__WEBSITE_URL__"><span id="website-label">Website portfolio</span><span aria-hidden="true"> ↗</span></a>
         </div>
         <div class="terminal-body">
             <div id="output"></div>
             <div class="input-line">
                 <span class="prompt">guest@portfolio:~$</span>
-                <input type="text" id="input" autofocus autocomplete="off" spellcheck="false">
+                <input type="text" id="input" aria-label="Terminal command" autofocus autocomplete="off" spellcheck="false">
             </div>
         </div>
     </div>

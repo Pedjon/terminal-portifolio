@@ -17,17 +17,27 @@ Do not install an app as a standalone package: its `@portfolio/content` dependen
 
 `yarn build` produces both outputs. Publish only the chosen app's `dist` directory; source files, tests, and workspace dependencies do not need to be served.
 
-## Website configuration
+## Links between deployments
 
-Copy `apps/web/.env.example` to `apps/web/.env`, or provide the environment variable through your build environment:
+Copy each app's `.env.example` to `.env` in the same directory, or provide the variables through your build environment. For a terminal at the main domain and a website on a subdomain, for example:
 
 ```dotenv
-PUBLIC_TERMINAL_URL=https://terminal.example.com/
+# apps/terminal/.env
+VITE_WEB_URL=https://www.example.com/
 ```
 
-The URL must be absolute HTTP or HTTPS. The example domain is illustrative; substitute your actual terminal URL before a production build. Local development defaults to `http://localhost:8080/`.
+```dotenv
+# apps/web/.env
+PUBLIC_TERMINAL_URL=https://example.com/
+```
+
+Both values must be absolute HTTP or HTTPS URLs pointing to the other app's root. Example domains are illustrative; substitute your actual deployment URLs before a production build. Local defaults are `http://localhost:8081/` for the website and `http://localhost:8080/` for the terminal.
+
+The terminal links to the website's `/` or `/pt-br/` route according to the current language. The website links to the terminal with `?lang=en` or `?lang=pt-BR`. The terminal defaults to English for missing or unsupported query values. Language commands update the cross-app link without persisting the terminal's language across reloads.
 
 Environment values are embedded at build time. Rebuild after changing them; changing static-server environment variables does not update an existing output.
+
+Docker Compose runs development servers and accepts the same variable names from your shell or the root Compose `.env` file. App-local `.env` files are excluded from Docker images; Compose supplies localhost defaults unless you override them.
 
 Serve the website's `index.html` at `/` and `pt-br/index.html` at `/pt-br/`. Use ordinary static directory-index handling, rather than an SPA fallback to the English homepage. Both apps are intended to be served from the root of their respective deployments.
 

@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { getInitialLocale, getWebsiteUrl } from '../src/assets/scripts/navigation.js';
+
+test('reads supported incoming languages and defaults to English', () => {
+  for (const query of ['?lang=pt-BR', '?lang=pt-br', '?source=web&lang=PT-BR']) {
+    assert.equal(getInitialLocale(query), 'pt-BR');
+  }
+  for (const query of ['', '?lang=en', '?lang=fr', '?lang=', '?lang=toString']) {
+    assert.equal(getInitialLocale(query), 'en');
+  }
+});
+
+test('website links select the localized page on another deployment', () => {
+  assert.equal(getWebsiteUrl('https://portfolio.example/', 'en'), 'https://portfolio.example/');
+  assert.equal(getWebsiteUrl('https://portfolio.example/', 'pt-BR'), 'https://portfolio.example/pt-br/');
+  assert.equal(getWebsiteUrl('https://portfolio.example', 'fr'), 'https://portfolio.example/');
+});
+
+test('website links respect a configured base path and query string', () => {
+  assert.equal(getWebsiteUrl('https://example.com/portfolio?source=terminal', 'pt-BR'), 'https://example.com/portfolio/pt-br/?source=terminal');
+});
+
+test('website deployment URLs must be absolute HTTP or HTTPS URLs', () => {
+  for (const url of ['/portfolio/', 'javascript:alert(1)', 'file:///tmp/website']) {
+    assert.throws(() => getWebsiteUrl(url, 'en'), TypeError);
+  }
+});

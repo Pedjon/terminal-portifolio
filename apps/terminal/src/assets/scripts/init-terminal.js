@@ -1,12 +1,27 @@
-import { t } from './i18n.js';
+import { getLang, setLang, t } from './i18n.js';
 import { initStorage } from './init-storage.js';
 import { createTerminal } from './handle-terminal.js';
 import { bindKeyboard } from './keyboard-handler.js';
+import { getInitialLocale, getWebsiteUrl } from './navigation.js';
 
 function initTerminal() {
   const input = document.getElementById('input');
   const output = document.getElementById('output');
   const terminalBody = document.querySelector('.terminal-body');
+  const websiteLink = document.getElementById('website-link');
+  const websiteLabel = document.getElementById('website-label');
+
+  setLang(getInitialLocale(window.location.search));
+
+  function updateLanguage(locale) {
+    document.documentElement.lang = locale;
+    document.title = t('pageTitle');
+    input.setAttribute('aria-label', t('inputLabel'));
+    websiteLabel.textContent = t('websiteLink');
+    websiteLink.href = getWebsiteUrl(import.meta.env.VITE_WEB_URL || 'http://localhost:8081/', locale);
+  }
+
+  updateLanguage(getLang());
   const { commandsCol, seedCommands } = initStorage(globalThis.loki);
 
   const viewport = window.visualViewport;
@@ -67,7 +82,8 @@ function initTerminal() {
     seedCommands,
     addCommand,
     addOutput,
-    clearOutput: () => output.replaceChildren()
+    clearOutput: () => output.replaceChildren(),
+    onLanguageChange: updateLanguage
   });
 
   bindKeyboard(input, terminal);

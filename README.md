@@ -12,9 +12,9 @@ With Docker and Docker Compose installed, run from the repository root:
 docker compose up --build
 ```
 
-Open [localhost:8080](http://localhost:8080). Terminal source and tests are mounted under `/app/apps/terminal`; Vite reloads the page after source edits. Rebuild the container after changing dependencies or workspace configuration.
+Open the terminal at [localhost:8080](http://localhost:8080) and the website at [localhost:8081](http://localhost:8081). Both apps' source, tests, and shared content are mounted into the containers; source edits trigger live reload. Rebuild after changing dependencies or workspace package manifests. The existing `terminal-portifolio` service runs the terminal; `web-portfolio` runs the conventional website.
 
-To stop and remove the container:
+To stop and remove the containers:
 
 ```sh
 docker compose down
@@ -63,7 +63,9 @@ Set `PUBLIC_TERMINAL_URL` in `apps/web/.env` before a production build to point 
 | `clear` | Clear terminal output. |
 | `lang en` / `lang pt-BR` | Switch between English and Brazilian Portuguese. |
 
-Press **Enter** to execute a command, use **Up/Down** to navigate command history, and press **Tab** to complete a command when there is a single match. Commands are case-insensitive. Language selection and command history reset on reload.
+Press **Enter** to execute a command, use **Up/Down** to navigate command history, and press **Tab** to complete a command when there is a single match. Use **Shift+Tab** to navigate backward to the website link; browsers may focus the scrollable output along the way. Commands are case-insensitive. History resets on reload; language starts in English unless the incoming URL includes `?lang=pt-BR` or `?lang=en`. Language commands update the website link and document language without persisting a preference.
+
+The terminal header links to the conventional website in the current language. Set `VITE_WEB_URL` in `apps/terminal/.env` before production builds, starting from `apps/terminal/.env.example`. It defaults to `http://localhost:8081/` for development. Vite also embeds this URL into the HTML so the link works before the terminal starts or when JavaScript is unavailable. Website links back to the terminal include the selected language in the query string.
 
 ## Project structure
 
@@ -84,6 +86,7 @@ apps/web/
   astro.config.mjs                 Static build configuration
 packages/content/                  Shared structured English and Portuguese résumé records
 docs/portfolio.md                  Résumé reference for personalized content
+docs/deployment.md                 Independent builds, URL configuration, and static hosting
 package.json                       Private workspace root and repository commands
 yarn.lock                          Shared Yarn Classic lockfile
 Dockerfile                         Node 24 development image
@@ -98,7 +101,9 @@ Agents should make small, focused commits (micro commits) as work progresses, wi
 
 Portfolio facts live in the `@portfolio/content` workspace. Edit `packages/content/src/en.js` and `packages/content/src/pt-BR.js` together; see [the content guide](packages/content/README.md) for the record structure and API. The résumé in `docs/portfolio.md` remains a reference and must be synchronized manually when facts change. Terminal UI labels and command descriptions live in `apps/terminal/src/assets/scripts/i18n.js`; `format-portfolio.js` formats shared records into text. To add a command, add its name to `cmdNames` in `init-storage.js` and define its translations in both languages. Add special behavior in `handle-terminal.js` when needed.
 
-The browser loads `init-terminal.js` as its module entrypoint. Reusable modules export translation functions, `buildCommands()`, `initStorage(Loki)`, `createTerminal(...)`, and `bindKeyboard(input, terminal)`. Importing these reusable modules does not access the DOM or initialize LokiJS. Keep browser setup and rendering in the entrypoint.
+The browser loads `init-terminal.js` as its module entrypoint. Reusable modules export translation functions, `buildCommands()`, `initStorage(Loki)`, `createTerminal(...)`, and `bindKeyboard(input, terminal)`. Importing these modules does not access the DOM or initialize LokiJS. Keep terminal browser setup and rendering in the entrypoint. The controller's optional `onLanguageChange(locale)` callback lets browser setup refresh the document language, input label, and website link after a valid language command.
+
+The Astro development and preview scripts use `--ignore-lock` to stay in the foreground when run by an agent. This lets `concurrently` and Docker manage their lifecycle. Stop workspace preview commands with Ctrl+C; they are not background Astro servers. The Docker build keeps Yarn downloads in a BuildKit cache instead of the development image.
 
 ## Tests
 
@@ -116,7 +121,7 @@ To run tests in a disposable container without starting the website:
 docker compose run --rm --build --no-deps terminal-portifolio yarn test
 ```
 
-Both commands run the current source and tests from the mounted workspace directories. Vite serves the terminal source root; tests and package metadata are outside it.
+Both commands run the tests for all workspaces against current mounted source. Vite serves the terminal source root; tests and package metadata are outside it. Compose mounts app source and tests, not host dependency directories; rebuild after changing any workspace manifest or the root lockfile.
 
 To run tests locally with Node.js 24 or newer and [Yarn Classic 1.22.22](https://classic.yarnpkg.com/en/docs/install) installed:
 

@@ -1,14 +1,34 @@
+x-portfolio: &portfolio
+  build: .
+  init: true
+  volumes:
+    - ./apps/terminal/src:/app/apps/terminal/src
+    - ./apps/terminal/tests:/app/apps/terminal/tests
+    - ./apps/terminal/vite.config.js:/app/apps/terminal/vite.config.js:ro
+    - ./apps/web/src:/app/apps/web/src
+    - ./apps/web/public:/app/apps/web/public
+    - ./apps/web/tests:/app/apps/web/tests
+    - ./apps/web/astro.config.mjs:/app/apps/web/astro.config.mjs:ro
+    - ./packages/content/src:/app/packages/content/src
+    - ./packages/content/tests:/app/packages/content/tests
+    - ./package.json:/app/package.json:ro
+    - ./yarn.lock:/app/yarn.lock:ro
+  restart: unless-stopped
+
 services:
   terminal-portifolio:
+    <<: *portfolio
     container_name: terminal-portifolio
-    build: .
+    command: ["yarn", "dev:terminal"]
+    environment:
+      VITE_WEB_URL: ${VITE_WEB_URL:-http://localhost:8081/}
     ports:
       - "8080:8080"
-    volumes:
-      - ./apps/terminal/src:/app/apps/terminal/src
-      - ./apps/terminal/tests:/app/apps/terminal/tests
-      - ./apps/terminal/vite.config.js:/app/apps/terminal/vite.config.js:ro
-      - ./packages/content:/app/packages/content
-      - ./package.json:/app/package.json:ro
-      - ./yarn.lock:/app/yarn.lock:ro
-    restart: unless-stopped
+
+  web-portfolio:
+    <<: *portfolio
+    command: ["yarn", "dev:web"]
+    environment:
+      PUBLIC_TERMINAL_URL: ${PUBLIC_TERMINAL_URL:-http://localhost:8080/}
+    ports:
+      - "8081:8081"
