@@ -154,7 +154,7 @@ export default {
     }
   ],
   "contact": {
-    "email": "pedrohenrique.gdo@gmail.com",
+    "email": "contato@pedjon.dev",
     "location": "Brasília, Distrito Federal, Brasil",
     "linkedin": "https://www.linkedin.com/in/pedro-henrique-oliveira-983559168/"
   },

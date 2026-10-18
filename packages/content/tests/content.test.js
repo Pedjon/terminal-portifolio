@@ -49,5 +49,5 @@ test('translations cover the same records without sharing mutable language state
   assert.notEqual(english.profile.paragraphs[0], portuguese.profile.paragraphs[0]);
   assert.equal(english.locale, 'en');
   assert.equal(getPortfolio('en').locale, 'en');
-  assert.equal(english.contact.email, portuguese.contact.email);
+  assert.notEqual(english.contact.email, portuguese.contact.email);
 });

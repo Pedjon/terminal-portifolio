@@ -51,3 +51,9 @@ Also contributed to Klickpages (now Hotmart Pages), a high-scale landing page bu
 - **Bachelor of Computer Science:** Centro Universitário de Brasília \- UNICEUB \- 2017  
 - **High School Graduation:** Colégio Sigma \- 2010  
 - **English School Graduation:** Casa Thomas Jefferson \- 2008
+
+**Contact**
+---
+
+- **Email (English):** contact@pedjon.dev
+- **Email (Português BR):** contato@pedjon.dev
