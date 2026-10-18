@@ -7,6 +7,7 @@ ENV ASTRO_TELEMETRY_DISABLED=1
 COPY package.json yarn.lock ./
 COPY apps/terminal/package.json ./apps/terminal/package.json
 COPY apps/web/package.json ./apps/web/package.json
+COPY apps/donations/package.json ./apps/donations/package.json
 COPY packages/content/package.json ./packages/content/package.json
 
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \

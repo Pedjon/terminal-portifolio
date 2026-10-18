@@ -2,8 +2,8 @@
 
 ## Scope and architecture
 
-- This repository is a private Yarn Classic monorepo with two independently deployable static apps. The terminal uses HTML, CSS, and vanilla JavaScript ES modules with Vite; the conventional portfolio uses Astro.
-- Terminal source and tests live in `apps/terminal/`; structured résumé records live in `packages/content/`. There is no backend. The root `package.json` declares workspaces, ES modules, Node 24 or newer, and Yarn Classic 1.22.22.
+- This repository is a private Yarn Classic monorepo with three independently deployable apps. The terminal uses HTML, CSS, and vanilla JavaScript ES modules with Vite; the conventional portfolio uses Astro; the donations page uses Astro served by a Cloudflare Worker.
+- Terminal source and tests live in `apps/terminal/`; structured résumé records live in `packages/content/`. The terminal and website have no backend. The donations Worker in `apps/donations/worker/` is the only server code; it verifies Turnstile and creates Mercado Pago checkouts. The root `package.json` declares workspaces, ES modules, Node 24 or newer, and Yarn Classic 1.22.22.
 - LokiJS 1.5.12 is loaded from a CDN and holds an in-memory command collection. It does not currently persist data.
 - English (`en`) is the default language; Brazilian Portuguese (`pt-BR`) is also supported.
 - The website lives in `apps/web/`, renders the shared records as HTML, and provides light/dark themes. Its English route is `/`; Portuguese is `/pt-br/`. Keep content and navigation usable without JavaScript.
@@ -33,6 +33,10 @@
 | `apps/web/src/styles/global.css` | Responsive website layout and light/dark color tokens. |
 | `apps/web/tests/` | Website language completeness, navigation, and theme tests. |
 | `docs/deployment.md` | Independent build commands, URL environment variables, Cloudflare Pages project settings, and static preview instructions. |
+| `apps/donations/src/` | Donation pages, UI translations, shared amount rules, theme behavior, and the browser form script. |
+| `apps/donations/worker/` | Worker entrypoint routing `/api/*` and serving assets, and the Turnstile-verified Mercado Pago checkout handler. |
+| `apps/donations/wrangler.jsonc` | Worker name, assets, custom domain, Turnstile hostnames, and observability. |
+| `apps/donations/tests/` | Amount, translation, payment return, and checkout Worker tests. |
 | `Dockerfile` | Node 24 Alpine development image with all workspace dependencies. |
 | `docker-compose.yml` | Separate terminal and website services on ports 8080 and 8081, with app source, tests, and shared content mounted. |
 
@@ -60,6 +64,8 @@
 - Preserve keyboard interaction and check usability at narrow viewport widths when changing the interface.
 - Configure cross-app links through `VITE_WEB_URL` (terminal) and `PUBLIC_TERMINAL_URL` (website). Keep locale selection intact when switching apps; terminal query parameters select the initial language, and website languages use static routes. Never hardcode production domains.
 - Cross-app transitions run on the page being left: the website boots before following either terminal link; the terminal shows a shutdown message and CRT collapse before following its header or welcome website link. Keep each animation under a second, translate messages in both languages, bypass animations for reduced motion, and preserve native modified clicks, new-tab targets, and no-JavaScript links. Reset transition state on page hide and restoration from the back/forward cache; direct visits must open normally. Keep terminal DOM wiring in `init-terminal.js`.
+- Keep donation secrets (`MP_ACCESS_TOKEN`, `TURNSTILE_SECRET_KEY`) in Worker secrets or an ignored `apps/donations/.dev.vars`; never commit them or send them to the browser. Validate amounts in the Worker with the shared `amount.js` rules, verify Turnstile server-side (success, `donate` action, and allowed hostname) before calling Mercado Pago, and return generic errors without upstream details.
+- Keep donation page text in `apps/donations/src/scripts/i18n.js` in both languages, including checkout item titles. Match the website's color tokens and theme storage when changing either app's styles.
 - Keep the terminal Vite `envDir` at the workspace root, despite its `src` application root. Its HTML transform embeds the default website link before JavaScript runs; browser startup updates that link for the selected locale.
 
 ## Run and validate
@@ -86,6 +92,8 @@ Run `yarn build` after changing application code or build configuration. There i
 6. `clear` and entering another command afterward.
 7. Browser console errors and layout at desktop and narrow viewport widths.
 8. Header and welcome website links after language commands, incoming `?lang=pt-BR`, unsupported locale fallback, and Shift+Tab focus navigation. After `clear`, language changes must still work with the welcome link removed.
+
+For the donations page, run the Worker with `yarn dev:donations` and the test keys from `.dev.vars.example`. Check both locales and themes, suggested and typed amounts, invalid amounts, the Turnstile widget at desktop and narrow widths, checkout errors, and `?payment=` return messages. Use Mercado Pago test credentials before changing the live checkout flow.
 
 For the website, check both locales, section navigation, contact links, light/dark system preferences, saved theme choices, storage failure, and no-JavaScript rendering. Run shared content tests and website tests through the root `yarn test` command.
 

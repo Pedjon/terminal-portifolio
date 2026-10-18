@@ -1,8 +1,8 @@
 # Portfolio
 
-A bilingual portfolio with two presentations: an interactive terminal for developers and a conventional website for recruiters and hiring teams. Both use the same résumé records and can be built and hosted independently. The terminal remains the main portfolio experience.
+A bilingual portfolio with two presentations: an interactive terminal for developers and a conventional website for recruiters and hiring teams. Both use the same résumé records and can be built and hosted independently. The terminal remains the main portfolio experience. A separate donations page, styled like the website, accepts one-time donations through Mercado Pago.
 
-Organized as a Yarn Classic monorepo. The terminal uses vanilla JavaScript and Vite; the website uses Astro to generate static HTML. LokiJS stores the terminal command catalog in memory. There is no backend.
+Organized as a Yarn Classic monorepo. The terminal uses vanilla JavaScript and Vite; the website uses Astro to generate static HTML. LokiJS stores the terminal command catalog in memory. The portfolio apps have no backend; the donations app uses a Cloudflare Worker to create Mercado Pago checkouts.
 
 ## Run locally
 
@@ -36,9 +36,12 @@ Run `yarn build:terminal` to generate `apps/terminal/dist/`. Preview that output
 | `yarn dev` | Start both apps; stop both with Ctrl+C. |
 | `yarn dev:terminal` | Start the terminal at `http://localhost:8080`. |
 | `yarn dev:web` | Start the website at `http://localhost:8081`. |
-| `yarn build` | Build both apps. |
+| `yarn dev:donations` | Build the donations page and run its Worker at `http://localhost:8082`. |
+| `yarn build` | Build all three apps. |
 | `yarn build:terminal` | Build the terminal into `apps/terminal/dist/`. |
 | `yarn build:web` | Build the website into `apps/web/dist/`. |
+| `yarn build:donations` | Build the donations page into `apps/donations/dist/`. |
+| `yarn deploy:donations` | Deploy the built donations page and Worker with Wrangler. |
 | `yarn test` | Run all workspace unit tests. |
 
 ## Conventional website
@@ -48,6 +51,14 @@ The website introduces the developer, work experience, selected projects, skills
 The website follows the system light/dark preference until the visitor uses the theme control. Explicit choices are saved in browser local storage and applied before first paint. If storage is unavailable, the control still works for the current page. With JavaScript disabled, the website follows the system preference and hides the theme control.
 
 Set `PUBLIC_TERMINAL_URL` in `apps/web/.env` before a production build to point the website's terminal links at the independently hosted terminal. Start from `apps/web/.env.example`; the development default is `http://localhost:8080/`. See [the deployment guide](docs/deployment.md) for independent static builds.
+
+## Donations page
+
+The donations page lists ways to support open-source work, styled like the conventional website with the same light/dark themes. English is at `/` and Brazilian Portuguese at `/pt-br/`. Its first option is a one-time Mercado Pago donation in Brazilian reais: visitors choose a suggested amount or type one between R$ 5 and R$ 5,000, complete a Cloudflare Turnstile check, and continue to Mercado Pago's checkout. After paying, Mercado Pago returns them to the page in their language with a confirmation message.
+
+The Worker in `apps/donations/worker/` serves the static pages and handles `POST /api/checkout`. It verifies the Turnstile token, then creates a Mercado Pago Checkout Pro preference with the `MP_ACCESS_TOKEN` secret. The access token never reaches the browser.
+
+To run it locally, copy `apps/donations/.dev.vars.example` to `apps/donations/.dev.vars`, optionally add a Mercado Pago test access token, and run `yarn dev:donations`. The example uses Cloudflare's always-pass Turnstile test keys. Without an access token, the page and verification work and checkout reports that it is unavailable. The Worker runs outside Docker because Wrangler's local runtime does not support the Alpine image. Use `yarn workspace @portfolio/donations dev:page` for an Astro development server with live reload but without the API. See [the deployment guide](docs/deployment.md#donations-worker) for secrets and hosting.
 
 ## Commands
 
@@ -90,9 +101,14 @@ apps/web/
   src/styles/global.css            Responsive light and dark themes
   tests/                           Website labels, navigation, and theme tests
   astro.config.mjs                 Static build configuration
+apps/donations/
+  src/                             Donation pages, labels, amount rules, and form behavior
+  worker/                          Worker that serves assets and creates Mercado Pago checkouts
+  tests/                           Amount, label, and checkout Worker tests
+  wrangler.jsonc                   Worker, assets, custom domain, and variables
 packages/content/                  Shared structured English and Portuguese résumé records
 docs/portfolio.md                  Résumé reference for personalized content
-docs/deployment.md                 Independent builds, URL configuration, and Cloudflare Pages hosting
+docs/deployment.md                 Independent builds, URL configuration, and Cloudflare hosting
 package.json                       Private workspace root and repository commands
 yarn.lock                          Shared Yarn Classic lockfile
 Dockerfile                         Node 24 development image
@@ -141,4 +157,6 @@ Install workspace dependencies first with `yarn install --frozen-lockfile`. The 
 
 Tests cover shared content completeness and locale parity, translations, command catalog and help generation, command execution, language switching, history, and completion. Each terminal controller receives a command collection and rendering callbacks, so its logic can be tested without a browser or LokiJS.
 
-Website tests cover translated UI labels, cross-origin terminal links, unmodified link activation, and theme preference selection. Browser smoke checks should cover both languages, desktop and narrow layouts, theme persistence, a blocked-storage context, and the website with JavaScript disabled. Also check terminal rendering, focus, and keyboard event wiring. Verify both transitions, reduced motion, opening links in a new tab, and Back/Forward restoration with working terminal commands afterward. Run `yarn build` to verify both independent production outputs. There is no lint command configured.
+Website tests cover translated UI labels, cross-origin terminal links, unmodified link activation, and theme preference selection. Browser smoke checks should cover both languages, desktop and narrow layouts, theme persistence, a blocked-storage context, and the website with JavaScript disabled. Also check terminal rendering, focus, and keyboard event wiring. Verify both transitions, reduced motion, opening links in a new tab, and Back/Forward restoration with working terminal commands afterward. Donations tests cover amount parsing and limits, translated labels, payment return messages, Turnstile verification, and Mercado Pago preference creation with mocked network calls. Browser checks should cover both languages and themes, suggested and typed amounts, the Turnstile widget, checkout errors, payment return messages, and narrow layouts.
+
+Run `yarn build` to verify all independent production outputs. There is no lint command configured.

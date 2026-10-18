@@ -1,6 +1,6 @@
 # Independent static deployments
 
-Both apps build from the same repository and shared content package, but each output can be deployed independently. Each app is served from the root of its own domain or subdomain. Production uses Cloudflare Pages; see [Cloudflare Pages](#cloudflare-pages).
+Both apps build from the same repository and shared content package, but each output can be deployed independently. Each app is served from the root of its own domain or subdomain. The terminal and website use Cloudflare Pages; see [Cloudflare Pages](#cloudflare-pages). The donations page runs on a Cloudflare Worker; see [Donations Worker](#donations-worker).
 
 Use Node.js 24 or newer and Yarn Classic 1.22.22. Install from the repository root, including the workspace manifests and the single lockfile:
 
@@ -14,8 +14,9 @@ Do not install an app as a standalone package: its `@portfolio/content` dependen
 | --- | --- | --- |
 | Terminal | `yarn build:terminal` | `apps/terminal/dist` |
 | Website | `yarn build:web` | `apps/web/dist` |
+| Donations | `yarn build:donations` | `apps/donations/dist` (served by its Worker) |
 
-`yarn build` produces both outputs. Publish only the chosen app's `dist` directory; source files, tests, and workspace dependencies do not need to be served.
+`yarn build` produces all three outputs. Publish only the chosen app's `dist` directory; source files, tests, and workspace dependencies do not need to be served.
 
 ## Links between deployments
 
@@ -63,6 +64,33 @@ Build watch paths skip a project's build when a push changes none of its include
 Both projects set `NODE_VERSION=24` and `YARN_VERSION=1.22.22`, because the v3 build image defaults to Yarn 4 and ignores `engines` and `packageManager`. The terminal sets `VITE_WEB_URL=https://portfolio.pedjon.dev/`, and the website sets `PUBLIC_TERMINAL_URL=https://terminal.pedjon.dev/`, for production and preview builds. Preview deployments therefore link to the production version of the other app.
 
 Each custom domain uses a proxied `CNAME` record in the `pedjon.dev` zone pointing to the project's `pages.dev` subdomain. Change project settings in the Cloudflare dashboard under **Workers & Pages**, then retry a deployment so the new build values take effect.
+
+## Donations Worker
+
+The donations page is a Cloudflare Worker named `pedjon-donations` at `donations.pedjon.dev`, configured in `apps/donations/wrangler.jsonc`. It serves `apps/donations/dist` as static assets and runs code only for `/api/*`. The custom domain is declared in the Wrangler configuration, and `workers.dev` and preview URLs are disabled so Turnstile only accepts the production hostname.
+
+Workers Builds deploys it from the GitHub repository:
+
+| Setting | Value |
+| --- | --- |
+| Root directory | repository root |
+| Build command | `yarn build:donations` |
+| Deploy command | `yarn deploy:donations` |
+| Build variables | `YARN_VERSION=1.22.22`, `PUBLIC_WEB_URL=https://portfolio.pedjon.dev/`, `PUBLIC_TURNSTILE_SITE_KEY=<widget site key>` |
+| Build watch paths | `apps/donations/*`, `packages/*`, `package.json`, `yarn.lock` (excluding `apps/donations/tests/*`, `packages/*/tests/*`) |
+
+`PUBLIC_WEB_URL` points the header and footer links at the website, and the Turnstile site key is public and embedded at build time. Without them, builds fall back to `http://localhost:8081/` and Cloudflare's test site key.
+
+The Worker needs two secrets, which must never be committed:
+
+| Secret | Value |
+| --- | --- |
+| `MP_ACCESS_TOKEN` | Production access token from the Mercado Pago application used for donations. |
+| `TURNSTILE_SECRET_KEY` | Secret key of the Turnstile widget registered for `donations.pedjon.dev`. |
+
+Set or rotate a secret from `apps/donations` with `npx wrangler secret put MP_ACCESS_TOKEN` and paste the value at the prompt. The `TURNSTILE_HOSTNAMES` variable in the Wrangler configuration lists the hostnames whose Turnstile tokens are accepted; keep `localhost` out of the production value. Workers Logs and traces are enabled, and checkout events are logged as JSON without tokens or payment data.
+
+Checkout Pro charges the amount in Brazilian reais and returns visitors to `/?payment=<success|pending|failure>` or `/pt-br/?payment=…` on the same origin. The page shows a confirmation message and removes Mercado Pago's query parameters from the address bar. Payment notifications (webhooks) are not configured; check donations in the Mercado Pago dashboard.
 
 ## Preview built output
 

@@ -1,0 +1,24 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "pedjon-donations",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-08",
+  // Static pages are served directly; only the API runs the Worker.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "routes": [{ "pattern": "donations.pedjon.dev", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    // Frontend hostnames accepted from Turnstile siteverify; .dev.vars overrides this locally.
+    "TURNSTILE_HOSTNAMES": "donations.pedjon.dev"
+  },
+  // Secrets: MP_ACCESS_TOKEN and TURNSTILE_SECRET_KEY (wrangler secret put).
+  "observability": {
+    "enabled": true,
+    "traces": { "enabled": true }
+  }
+}

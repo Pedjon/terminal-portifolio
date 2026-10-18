@@ -11,9 +11,12 @@
     "dev": "concurrently --kill-others --names terminal,web \"yarn dev:terminal\" \"yarn dev:web\"",
     "dev:terminal": "yarn workspace @portfolio/terminal dev",
     "dev:web": "yarn workspace @portfolio/web dev",
-    "build": "yarn build:terminal && yarn build:web",
+    "dev:donations": "yarn workspace @portfolio/donations dev",
+    "build": "yarn build:terminal && yarn build:web && yarn build:donations",
     "build:terminal": "yarn workspace @portfolio/terminal build",
     "build:web": "yarn workspace @portfolio/web build",
+    "build:donations": "yarn workspace @portfolio/donations build",
+    "deploy:donations": "yarn workspace @portfolio/donations deploy",
     "test": "node --test"
   },
   "devDependencies": {
