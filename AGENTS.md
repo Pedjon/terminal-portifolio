@@ -49,6 +49,7 @@
 - Keep history inside each controller instance. Inject the command collection and `seedCommands`, `addCommand`, `addOutput`, and `clearOutput` callbacks through `createTerminal(...)`.
 - Use the optional `onLanguageChange(locale)` callback for terminal browser updates after successful language changes. Initialize incoming language before storage, and keep DOM access in the browser entrypoint.
 - Keep résumé facts in `packages/content/src/en.js` and `pt-BR.js`; update both languages together and use matching stable record IDs. Consume them through `@portfolio/content`, treating returned records as read-only. Keep the package free of browser globals and mutable language state.
+- Every portfolio-content change must be reflected correctly in both the terminal and conventional website, in English and Brazilian Portuguese. Update shared facts once in `@portfolio/content`, adjust either renderer when needed, and verify both presentations before completing the work. Keep the résumé reference synchronized.
 - Keep terminal UI messages and command descriptions in `i18n.js`; use `format-portfolio.js` for text presentation instead of duplicating résumé facts.
 - Keep website UI text in `apps/web/src/scripts/i18n.js`, update both languages together, and render shared records through Astro components. Do not duplicate résumé facts in templates.
 - Keep theme preference storage defensive. Apply the saved website theme before first paint; without a saved choice, follow the system preference. Native links and role details must work without JavaScript.
