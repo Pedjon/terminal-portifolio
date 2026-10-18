@@ -110,7 +110,7 @@ test('preferences return visitors to their language with English as the fallback
   const english = buildPreference({ amount: 10, locale: 'fr', origin: 'https://donations.example.com' });
   assert.equal(english.back_urls.failure, 'https://donations.example.com/?payment=failure');
   assert.equal(english.auto_return, 'approved');
-  assert.match(english.items[0].title, /open-source/);
+  assert.match(english.items[0].title, /projects/);
 });
 
 test('Turnstile hostnames are read from a comma-separated list', () => {

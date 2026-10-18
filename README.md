@@ -54,7 +54,7 @@ The footer links to the donations page in the current language. Set `PUBLIC_TERM
 
 ## Donations page
 
-The donations page lists ways to support open-source work, styled like the conventional website with the same light/dark themes. English is at `/` and Brazilian Portuguese at `/pt-br/`. Its first option is a one-time Mercado Pago donation in Brazilian reais: visitors choose a suggested amount or type one between R$ 5 and R$ 5,000, complete a Cloudflare Turnstile check, and continue to Mercado Pago's checkout. After paying, Mercado Pago returns them to the page in their language with a confirmation message.
+The donations page lists ways to support my projects, styled like the conventional website with the same light/dark themes. English is at `/` and Brazilian Portuguese at `/pt-br/`. Its first option is a one-time Mercado Pago donation in Brazilian reais: visitors choose a suggested amount or type one between R$ 5 and R$ 5,000, complete a Cloudflare Turnstile check, and continue to Mercado Pago's checkout. After paying, Mercado Pago returns them to the page in their language with a confirmation message.
 
 The Worker in `apps/donations/worker/` serves the static pages and handles `POST /api/checkout`. It verifies the Turnstile token, then creates a Mercado Pago Checkout Pro preference with the `MP_ACCESS_TOKEN` secret. The access token never reaches the browser.
 

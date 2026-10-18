@@ -55,8 +55,8 @@ Not used to using a terminal? You can also view my {website}.
         title: 'Work Experience'
       },
       donate: {
-        description: 'Support my open-source work',
-        output: 'Find my open-source work useful? You can support it on my {donations}.'
+        description: 'Support my projects',
+        output: 'Find my projects useful? You can support them on my {donations}.'
       },
       clear: { description: 'Clear the terminal' },
       lang: { description: 'Change language (en, pt-BR)' }
@@ -113,8 +113,8 @@ Não está acostumado a usar um terminal? Você também pode visitar o {website}
         title: 'Experiência Profissional'
       },
       donate: {
-        description: 'Apoiar meu trabalho open source',
-        output: 'Meu trabalho open source foi útil para você? Você pode apoiá-lo na minha {donations}.'
+        description: 'Apoiar meus projetos',
+        output: 'Meus projetos foram úteis para você? Você pode apoiá-los na minha {donations}.'
       },
       clear: { description: 'Limpar o terminal' },
       lang: { description: 'Alterar idioma (en, pt-BR)' }
