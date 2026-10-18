@@ -49,8 +49,6 @@ The website follows the system light/dark preference until the visitor uses the 
 
 Set `PUBLIC_TERMINAL_URL` in `apps/web/.env` before a production build to point the website's terminal links at the independently hosted terminal. Start from `apps/web/.env.example`; the development default is `http://localhost:8080/`. See [the deployment guide](docs/deployment.md) for independent static builds.
 
-Opening either terminal link shows a brief, translated boot screen before navigating to the terminal's welcome message. The animation takes 800 ms and preserves the selected language. Direct visits, reduced-motion preferences, and links opened in another tab use normal navigation. Links also work without JavaScript; returning with the browser's Back button restores the website without leaving the boot screen visible.
-
 ## Commands
 
 | Command | Description |
@@ -68,6 +66,12 @@ Opening either terminal link shows a brief, translated boot screen before naviga
 Press **Enter** to execute a command, use **Up/Down** to navigate command history, and press **Tab** to complete a command when there is a single match. Use **Shift+Tab** to navigate backward to the website link; browsers may focus the scrollable output along the way. Commands are case-insensitive. History resets on reload; language starts in English unless the incoming URL includes `?lang=pt-BR` or `?lang=en`. Language commands update the website link and document language without persisting a preference.
 
 The welcome message offers visitors unfamiliar with terminals a clickable link to the conventional website. Both this link and the header link follow the current language, including after a `lang` command. Set `VITE_WEB_URL` in `apps/terminal/.env` before production builds, starting from `apps/terminal/.env.example`. It defaults to `http://localhost:8081/` for development. Vite also embeds the header link into the HTML so it works before the terminal starts or when JavaScript is unavailable. Website links back to the terminal include the selected language in the query string.
+
+## Transitions between formats
+
+Opening either terminal link on the website shows a translated boot screen with startup messages and a progress bar for 800 ms, then navigates to the terminal's welcome message. Opening the website from the terminal's header or welcome message shows “Shutting down…” (or “Desligando…”) and a CRT-style screen collapse for 700 ms before navigating.
+
+Both transitions run on the page being left, preserve the selected language, and work across independently hosted apps. Direct visits, reduced-motion preferences, and links opened in another tab use normal navigation. The links work without JavaScript, and returning with the browser's Back or Forward button restores the page without leaving a transition visible.
 
 ## Project structure
 
@@ -137,4 +141,4 @@ Install workspace dependencies first with `yarn install --frozen-lockfile`. The 
 
 Tests cover shared content completeness and locale parity, translations, command catalog and help generation, command execution, language switching, history, and completion. Each terminal controller receives a command collection and rendering callbacks, so its logic can be tested without a browser or LokiJS.
 
-Website tests cover translated UI labels, cross-origin terminal links, and theme preference selection. Browser smoke checks should cover both languages, desktop and narrow layouts, theme persistence, a blocked-storage context, and the website with JavaScript disabled. Also check terminal rendering, focus, and keyboard event wiring. Run `yarn build` to verify both independent production outputs. There is no lint command configured.
+Website tests cover translated UI labels, cross-origin terminal links, unmodified link activation, and theme preference selection. Browser smoke checks should cover both languages, desktop and narrow layouts, theme persistence, a blocked-storage context, and the website with JavaScript disabled. Also check terminal rendering, focus, and keyboard event wiring. Verify both transitions, reduced motion, opening links in a new tab, and Back/Forward restoration with working terminal commands afterward. Run `yarn build` to verify both independent production outputs. There is no lint command configured.

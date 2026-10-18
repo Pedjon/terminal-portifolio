@@ -2,7 +2,7 @@ import { getLang, setLang, t } from './i18n.js';
 import { initStorage } from './init-storage.js';
 import { createTerminal } from './handle-terminal.js';
 import { bindKeyboard } from './keyboard-handler.js';
-import { getInitialLocale, getWebsiteUrl } from './navigation.js';
+import { getInitialLocale, getWebsiteUrl, isPlainNavigation } from './navigation.js';
 
 function initTerminal() {
   const input = document.getElementById('input');
@@ -10,6 +10,8 @@ function initTerminal() {
   const terminalBody = document.querySelector('.terminal-body');
   const websiteLink = document.getElementById('website-link');
   const websiteLabel = document.getElementById('website-label');
+  const shutdownScreen = document.getElementById('shutdown-screen');
+  let navigationTimer;
 
   setLang(getInitialLocale(window.location.search));
 
@@ -24,6 +26,37 @@ function initTerminal() {
   }
 
   updateLanguage(getLang());
+
+  function resetShutdown() {
+    window.clearTimeout(navigationTimer);
+    navigationTimer = undefined;
+    shutdownScreen.hidden = true;
+    document.body.classList.remove('is-shutting-down');
+  }
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('#website-link, #welcome-website-link');
+    if (!link || !isPlainNavigation(event)
+      || (link.target && link.target.toLowerCase() !== '_self')
+      || link.hasAttribute('download')
+      || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    event.preventDefault();
+    if (navigationTimer !== undefined) return;
+
+    const destination = link.href;
+    shutdownScreen.textContent = t('shutdownMessage');
+    shutdownScreen.hidden = false;
+    input.blur();
+    document.body.classList.add('is-shutting-down');
+    navigationTimer = window.setTimeout(() => window.location.assign(destination), 700);
+  });
+
+  window.addEventListener('pagehide', resetShutdown);
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) resetShutdown();
+  });
+
   const { commandsCol, seedCommands } = initStorage(globalThis.loki);
 
   const viewport = window.visualViewport;

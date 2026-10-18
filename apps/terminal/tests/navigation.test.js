@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { getInitialLocale, getWebsiteUrl } from '../src/assets/scripts/navigation.js';
+import { getInitialLocale, getWebsiteUrl, isPlainNavigation } from '../src/assets/scripts/navigation.js';
 
 test('reads supported incoming languages and defaults to English', () => {
   for (const query of ['?lang=pt-BR', '?lang=pt-br', '?source=web&lang=PT-BR']) {
@@ -25,4 +25,15 @@ test('website deployment URLs must be absolute HTTP or HTTPS URLs', () => {
   for (const url of ['/portfolio/', 'javascript:alert(1)', 'file:///tmp/website']) {
     assert.throws(() => getWebsiteUrl(url, 'en'), TypeError);
   }
+});
+
+test('ordinary clicks, including keyboard-generated clicks, can animate navigation', () => {
+  assert.equal(isPlainNavigation({ button: 0 }), true);
+});
+
+test('modified, auxiliary, and already-handled clicks retain native behavior', () => {
+  for (const modifier of ['metaKey', 'ctrlKey', 'shiftKey', 'altKey', 'defaultPrevented']) {
+    assert.equal(isPlainNavigation({ button: 0, [modifier]: true }), false);
+  }
+  for (const button of [1, 2]) assert.equal(isPlainNavigation({ button }), false);
 });

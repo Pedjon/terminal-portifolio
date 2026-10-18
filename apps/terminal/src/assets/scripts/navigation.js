@@ -13,3 +13,8 @@ export function getWebsiteUrl(baseUrl, locale) {
   url.pathname = `${url.pathname.replace(/\/?$/, '/')}${locale === 'pt-BR' ? 'pt-br/' : ''}`;
   return url.href;
 }
+
+export function isPlainNavigation(event) {
+  return event.button === 0 && !event.defaultPrevented
+    && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
+}

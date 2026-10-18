@@ -35,6 +35,8 @@ Both values must be absolute HTTP or HTTPS URLs pointing to the other app's root
 
 The terminal links to the website's `/` or `/pt-br/` route according to the current language. The website links to the terminal with `?lang=en` or `?lang=pt-BR`. The terminal defaults to English for missing or unsupported query values. Language commands update the cross-app link without persisting the terminal's language across reloads.
 
+With JavaScript enabled, ordinary link activation shows a brief boot animation on the website or a shutdown animation on the terminal before following the existing destination. These effects need no shared origin, storage, or hosting configuration. Reduced-motion preferences and links opened in a new tab bypass the animations; direct visits and no-JavaScript links keep normal navigation.
+
 Environment values are embedded at build time. Rebuild after changing them; changing static-server environment variables does not update an existing output.
 
 Docker Compose runs development servers and accepts the same variable names from your shell or the root Compose `.env` file. App-local `.env` files are excluded from Docker images; Compose supplies localhost defaults unless you override them.

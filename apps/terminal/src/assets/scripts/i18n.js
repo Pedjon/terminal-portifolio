@@ -9,6 +9,7 @@ const translations = {
     websiteLink: 'Website portfolio',
     welcomeWebsiteLink: 'portfolio website',
     inputLabel: 'Terminal command',
+    shutdownMessage: 'Shutting down…',
     welcome: `
 Welcome to my Portfolio Terminal!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -61,6 +62,7 @@ Not used to using a terminal? You can also view my {website}.
     websiteLink: 'Portfólio web',
     welcomeWebsiteLink: 'site do portfólio',
     inputLabel: 'Comando do terminal',
+    shutdownMessage: 'Desligando…',
     welcome: `
 Bem-vindo ao meu Terminal Portfólio!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

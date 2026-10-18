@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 :root {
     color-scheme: dark;
     --terminal-height: 100vh;
@@ -47,6 +51,39 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+.shutdown-screen {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: var(--background);
+    color: var(--accent);
+    font-size: clamp(20px, 4vw, 28px);
+}
+
+body.is-shutting-down {
+    background: #000;
+}
+
+.is-shutting-down .terminal {
+    pointer-events: none;
+    animation: terminal-power-off 700ms ease-in forwards;
+}
+
+@keyframes terminal-power-off {
+    0%, 55% { transform: scale(1); opacity: 1; }
+    80% { transform: scale(1, 0.004); opacity: 0.8; }
+    100% { transform: scale(0, 0.004); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .is-shutting-down .terminal {
+        animation: none;
+    }
 }
 
 .terminal-header {

@@ -21,7 +21,7 @@
 | `apps/terminal/src/assets/scripts/handle-terminal.js` | Command processing, history, completion, and the optional `onLanguageChange(locale)` browser callback. |
 | `apps/terminal/src/assets/scripts/keyboard-handler.js` | `bindKeyboard(input, terminal)` connects Enter, arrow keys, and Tab to the controller. |
 | `apps/terminal/src/assets/scripts/init-terminal.js` | Browser entrypoint: DOM references, rendering, storage and controller setup, welcome output, and focus. |
-| `apps/terminal/src/assets/scripts/navigation.js` | Incoming locale selection and links to the independently hosted website. |
+| `apps/terminal/src/assets/scripts/navigation.js` | Incoming locale selection, links to the independently hosted website, and unmodified link activation. |
 | `packages/content/src/` | Shared bilingual résumé records and the pure `getPortfolio(locale)` / `supportedLocales` API. |
 | `packages/content/tests/` | Content completeness, supported locales, and matching record IDs. |
 | `docs/portfolio.md` | Résumé reference for the personalized portfolio content; synchronized manually with the shared content package. |
@@ -29,7 +29,7 @@
 | `apps/terminal/vite.config.js` | Terminal source root and independent static build output. |
 | `apps/web/src/pages/` | Static English and Portuguese entrypoints. |
 | `apps/web/src/components/Portfolio.astro` | Website layout, résumé presentation, semantic navigation, and localized metadata. |
-| `apps/web/src/scripts/` | Website UI translations, terminal URL generation, and theme behavior. |
+| `apps/web/src/scripts/` | Website UI translations, terminal URL generation and boot navigation, and theme behavior. |
 | `apps/web/src/styles/global.css` | Responsive website layout and light/dark color tokens. |
 | `apps/web/tests/` | Website language completeness, navigation, and theme tests. |
 | `docs/deployment.md` | Independent build commands, URL environment variables, and static preview instructions. |
@@ -59,7 +59,7 @@
 - Render user-provided text with `textContent` or DOM nodes.
 - Preserve keyboard interaction and check usability at narrow viewport widths when changing the interface.
 - Configure cross-app links through `VITE_WEB_URL` (terminal) and `PUBLIC_TERMINAL_URL` (website). Keep locale selection intact when switching apps; terminal query parameters select the initial language, and website languages use static routes. Never hardcode production domains.
-- The website's boot transition runs before following either terminal link. Keep the animation under a second, bypass it for reduced motion, and preserve native modified clicks, new-tab targets, and no-JavaScript links. Reset transition state on page hide and restoration from the back/forward cache; direct visits must open normally.
+- Cross-app transitions run on the page being left: the website boots before following either terminal link; the terminal shows a shutdown message and CRT collapse before following its header or welcome website link. Keep each animation under a second, translate messages in both languages, bypass animations for reduced motion, and preserve native modified clicks, new-tab targets, and no-JavaScript links. Reset transition state on page hide and restoration from the back/forward cache; direct visits must open normally. Keep terminal DOM wiring in `init-terminal.js`.
 - Keep the terminal Vite `envDir` at the workspace root, despite its `src` application root. Its HTML transform embeds the default website link before JavaScript runs; browser startup updates that link for the selected locale.
 
 ## Run and validate
@@ -89,6 +89,6 @@ Run `yarn build` after changing application code or build configuration. There i
 
 For the website, check both locales, section navigation, contact links, light/dark system preferences, saved theme choices, storage failure, and no-JavaScript rendering. Run shared content tests and website tests through the root `yarn test` command.
 
-Check the website's header and contact terminal links with mouse and keyboard in both locales. Verify the boot screen, reduced-motion bypass, modified/new-tab activation, and Back/Forward restoration at desktop and narrow widths.
+Check all cross-app links with mouse and keyboard in both locales, including the terminal header after `clear`. Verify the website boot screen, terminal shutdown message and CRT collapse, reduced-motion bypass, modified/new-tab activation, and Back/Forward restoration at desktop and narrow widths. Terminal commands must still work after history restoration.
 
 For documentation-only changes, review instructions against the source and run `git diff --check`. When reporting work, state what was checked and any validation that could not be completed.
