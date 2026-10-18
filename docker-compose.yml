@@ -31,5 +31,6 @@ services:
     command: ["yarn", "dev:web"]
     environment:
       PUBLIC_TERMINAL_URL: ${PUBLIC_TERMINAL_URL:-http://localhost:8080/}
+      PUBLIC_DONATIONS_URL: ${PUBLIC_DONATIONS_URL:-http://localhost:8082/}
     ports:
       - "8081:8081"

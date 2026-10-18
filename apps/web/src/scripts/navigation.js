@@ -7,6 +7,15 @@ export function getTerminalUrl(baseUrl, locale) {
   return url.href;
 }
 
+export function getDonationsUrl(baseUrl, locale) {
+  const url = new URL(baseUrl);
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    throw new TypeError('PUBLIC_DONATIONS_URL must be an absolute HTTP or HTTPS URL.');
+  }
+  url.pathname = `${url.pathname.replace(/\/?$/, '/')}${locale === 'pt-BR' ? 'pt-br/' : ''}`;
+  return url.href;
+}
+
 export function isPlainNavigation(event) {
   return event.button === 0 && !event.defaultPrevented
     && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;

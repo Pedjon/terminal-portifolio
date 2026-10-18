@@ -35,6 +35,7 @@ const messages = {
     email: 'Email',
     preferTerminal: 'Prefer the command line?',
     exploreTerminal: 'Explore the terminal portfolio',
+    donate: 'Support my open-source work',
     backToTop: 'Back to top'
   },
   'pt-BR': {
@@ -73,6 +74,7 @@ const messages = {
     email: 'Email',
     preferTerminal: 'Prefere a linha de comando?',
     exploreTerminal: 'Explore o portfólio terminal',
+    donate: 'Apoie meu trabalho open source',
     backToTop: 'Voltar ao início'
   }
 };

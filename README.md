@@ -50,7 +50,7 @@ The website introduces the developer, work experience, selected projects, skills
 
 The website follows the system light/dark preference until the visitor uses the theme control. Explicit choices are saved in browser local storage and applied before first paint. If storage is unavailable, the control still works for the current page. With JavaScript disabled, the website follows the system preference and hides the theme control.
 
-Set `PUBLIC_TERMINAL_URL` in `apps/web/.env` before a production build to point the website's terminal links at the independently hosted terminal. Start from `apps/web/.env.example`; the development default is `http://localhost:8080/`. See [the deployment guide](docs/deployment.md) for independent static builds.
+The footer links to the donations page in the current language. Set `PUBLIC_TERMINAL_URL` and `PUBLIC_DONATIONS_URL` in `apps/web/.env` before a production build to point the website's links at the independently hosted terminal and donations page. Start from `apps/web/.env.example`; the development defaults are `http://localhost:8080/` and `http://localhost:8082/`. See [the deployment guide](docs/deployment.md) for independent static builds.
 
 ## Donations page
 

@@ -162,7 +162,7 @@ details[open] summary > span { transform: rotate(45deg); }
 .contact-bottom { border-top: 1px solid var(--line); padding-top: 23px; margin-top: 33px; display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 16px; }
 .contact-bottom p { color: var(--muted); font-size: 12px; }
 .contact-bottom p a { color: var(--text); }
-.site-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 30px; color: var(--muted); font-size: 12px; }
+.site-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-block: 30px; color: var(--muted); font-size: 12px; }
 .site-footer .text-link { font-size: 12px; }
 
 .is-booting { overflow: hidden; }
