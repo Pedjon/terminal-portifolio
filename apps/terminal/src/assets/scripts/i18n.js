@@ -56,7 +56,7 @@ Not used to using a terminal? You can also view my {website}.
       },
       donate: {
         description: 'Support my projects',
-        output: 'Find my projects useful? You can support them on my {donations}.'
+        output: 'Did you like my projects? You can support them on my {donations}.'
       },
       clear: { description: 'Clear the terminal' },
       lang: { description: 'Change language (en, pt-BR)' }
@@ -114,7 +114,7 @@ Não está acostumado a usar um terminal? Você também pode visitar o {website}
       },
       donate: {
         description: 'Apoiar meus projetos',
-        output: 'Meus projetos foram úteis para você? Você pode apoiá-los na minha {donations}.'
+        output: 'Gostou dos meus projetos? Você pode apoiá-los na minha {donations}.'
       },
       clear: { description: 'Limpar o terminal' },
       lang: { description: 'Alterar idioma (en, pt-BR)' }
