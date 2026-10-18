@@ -59,6 +59,7 @@
 - Render user-provided text with `textContent` or DOM nodes.
 - Preserve keyboard interaction and check usability at narrow viewport widths when changing the interface.
 - Configure cross-app links through `VITE_WEB_URL` (terminal) and `PUBLIC_TERMINAL_URL` (website). Keep locale selection intact when switching apps; terminal query parameters select the initial language, and website languages use static routes. Never hardcode production domains.
+- The website's boot transition runs before following either terminal link. Keep the animation under a second, bypass it for reduced motion, and preserve native modified clicks, new-tab targets, and no-JavaScript links. Reset transition state on page hide and restoration from the back/forward cache; direct visits must open normally.
 - Keep the terminal Vite `envDir` at the workspace root, despite its `src` application root. Its HTML transform embeds the default website link before JavaScript runs; browser startup updates that link for the selected locale.
 
 ## Run and validate
@@ -87,5 +88,7 @@ Run `yarn build` after changing application code or build configuration. There i
 8. Header and welcome website links after language commands, incoming `?lang=pt-BR`, unsupported locale fallback, and Shift+Tab focus navigation. After `clear`, language changes must still work with the welcome link removed.
 
 For the website, check both locales, section navigation, contact links, light/dark system preferences, saved theme choices, storage failure, and no-JavaScript rendering. Run shared content tests and website tests through the root `yarn test` command.
+
+Check the website's header and contact terminal links with mouse and keyboard in both locales. Verify the boot screen, reduced-motion bypass, modified/new-tab activation, and Back/Forward restoration at desktop and narrow widths.
 
 For documentation-only changes, review instructions against the source and run `git diff --check`. When reporting work, state what was checked and any validation that could not be completed.

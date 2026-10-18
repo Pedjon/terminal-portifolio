@@ -49,6 +49,8 @@ The website follows the system light/dark preference until the visitor uses the 
 
 Set `PUBLIC_TERMINAL_URL` in `apps/web/.env` before a production build to point the website's terminal links at the independently hosted terminal. Start from `apps/web/.env.example`; the development default is `http://localhost:8080/`. See [the deployment guide](docs/deployment.md) for independent static builds.
 
+Opening either terminal link shows a brief, translated boot screen before navigating to the terminal's welcome message. The animation takes 800 ms and preserves the selected language. Direct visits, reduced-motion preferences, and links opened in another tab use normal navigation. Links also work without JavaScript; returning with the browser's Back button restores the website without leaving the boot screen visible.
+
 ## Commands
 
 | Command | Description |

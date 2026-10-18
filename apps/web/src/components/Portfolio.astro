@@ -68,7 +68,7 @@ const title = `${portfolio.profile.name} — ${portfolio.profile.role}`;
             <span data-theme-label>{ui.light}</span>
           </button>
 
-          <a class="terminal-link" href={terminalUrl} aria-label={ui.terminal}>
+          <a class="terminal-link" href={terminalUrl} aria-label={ui.terminal} data-terminal-link>
             <span class="terminal-symbol" aria-hidden="true">&gt;_</span>
             <span>{ui.terminalShort}</span>
             <span aria-hidden="true">↗</span>
@@ -178,7 +178,7 @@ const title = `${portfolio.profile.name} — ${portfolio.profile.role}`;
         <a class="contact-email" href={`mailto:${portfolio.contact.email}`}>{portfolio.contact.email}<span aria-hidden="true">↗</span></a>
         <div class="contact-bottom">
           <a class="text-link" href={portfolio.contact.linkedin}>LinkedIn<span aria-hidden="true">↗</span></a>
-          <p>{ui.preferTerminal} <a href={terminalUrl}>{ui.exploreTerminal}<span aria-hidden="true"> ↗</span></a></p>
+          <p>{ui.preferTerminal} <a href={terminalUrl} data-terminal-link>{ui.exploreTerminal}<span aria-hidden="true"> ↗</span></a></p>
         </div>
       </section>
     </main>
@@ -188,9 +188,24 @@ const title = `${portfolio.profile.name} — ${portfolio.profile.role}`;
       <a class="text-link" href="#top">{ui.backToTop}<span aria-hidden="true">↑</span></a>
     </footer>
 
+    <div id="terminal-boot" class="terminal-boot" hidden>
+      <div class="boot-console">
+        <p class="boot-host" aria-hidden="true">pedro@portfolio:~</p>
+        <p class="boot-title" role="status">{ui.terminalBoot}</p>
+        <ol class="boot-messages" aria-hidden="true">
+          <li>{ui.bootContent}</li>
+          <li>{ui.bootPrompt}</li>
+          <li>{ui.bootReady}</li>
+        </ol>
+        <div class="boot-progress" aria-hidden="true"><span></span></div>
+      </div>
+    </div>
+
     <script>
       import { initTheme } from '../scripts/theme.js';
+      import { initTerminalNavigation } from '../scripts/navigation.js';
       initTheme();
+      initTerminalNavigation();
     </script>
   </body>
 </html>
