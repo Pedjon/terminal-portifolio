@@ -1,6 +1,6 @@
 import { setLang, t } from './i18n.js';
 
-export function createTerminal({ commandsCol, seedCommands, addCommand, addOutput, clearOutput, onLanguageChange = () => {} }) {
+export function createTerminal({ commandsCol, seedCommands, addCommand, addOutput, clearOutput, addDonation = text => addOutput(text, 'response'), onLanguageChange = () => {} }) {
   const commandHistory = [];
   let historyIndex = -1;
 
@@ -30,6 +30,8 @@ export function createTerminal({ commandsCol, seedCommands, addCommand, addOutpu
     if (cmd) {
       if (command === 'clear') {
         clearOutput();
+      } else if (command === 'donate') {
+        addDonation(cmd.output);
       } else if (cmd.output) {
         addOutput(cmd.output, 'response');
       }

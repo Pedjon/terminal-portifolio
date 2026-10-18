@@ -4,7 +4,7 @@ import { createTerminal } from '../src/assets/scripts/handle-terminal.js';
 import { getLang, setLang, t } from '../src/assets/scripts/i18n.js';
 import { buildCommands } from '../src/assets/scripts/init-storage.js';
 
-function setupTerminal({ onLanguageChange } = {}) {
+function setupTerminal({ onLanguageChange, addDonation } = {}) {
   let commands = buildCommands();
   const seedCommands = mock.fn(() => { commands = buildCommands(); });
   const addCommand = mock.fn();
@@ -19,6 +19,7 @@ function setupTerminal({ onLanguageChange } = {}) {
     addCommand,
     addOutput,
     clearOutput,
+    addDonation,
     onLanguageChange
   });
 
@@ -74,6 +75,18 @@ for (const language of ['en', 'pt-BR']) {
     assert.equal(terminal.previousCommand(), 'missing');
   });
 }
+
+test('passes donation text with its link placeholder to the donation renderer', () => {
+  const addDonation = mock.fn();
+  const { terminal, addOutput } = setupTerminal({ addDonation });
+  terminal.processCommand('donate');
+
+  assert.equal(addOutput.mock.callCount(), 0);
+  assert.equal(addDonation.mock.callCount(), 1);
+  const [text] = addDonation.mock.calls[0].arguments;
+  assert.equal(text.split('{donations}').length, 2);
+  assert.equal(text, buildCommands().find(command => command.name === 'donate').output);
+});
 
 test('switches languages, refreshes the catalog, and uses translated output immediately', () => {
   const { terminal, seedCommands, addOutput } = setupTerminal();

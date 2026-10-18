@@ -22,6 +22,7 @@ services:
     command: ["yarn", "dev:terminal"]
     environment:
       VITE_WEB_URL: ${VITE_WEB_URL:-http://localhost:8081/}
+      VITE_DONATIONS_URL: ${VITE_DONATIONS_URL:-http://localhost:8082/}
     ports:
       - "8080:8080"
 

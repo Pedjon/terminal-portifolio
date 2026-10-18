@@ -71,12 +71,13 @@ To run it locally, copy `apps/donations/.dev.vars.example` to `apps/donations/.d
 | `contact` | Show contact information. |
 | `education` | Show education details. |
 | `experience` | Show work experience. |
+| `donate` | Link to the donations page. |
 | `clear` | Clear terminal output. |
 | `lang en` / `lang pt-BR` | Switch between English and Brazilian Portuguese. |
 
 Press **Enter** to execute a command, use **Up/Down** to navigate command history, and press **Tab** to complete a command when there is a single match. Use **Shift+Tab** to navigate backward to the website link; browsers may focus the scrollable output along the way. Commands are case-insensitive. History resets on reload; language starts in English unless the incoming URL includes `?lang=pt-BR` or `?lang=en`. Language commands update the website link and document language without persisting a preference.
 
-The welcome message offers visitors unfamiliar with terminals a clickable link to the conventional website. Both this link and the header link follow the current language, including after a `lang` command. Set `VITE_WEB_URL` in `apps/terminal/.env` before production builds, starting from `apps/terminal/.env.example`. It defaults to `http://localhost:8081/` for development. Vite also embeds the header link into the HTML so it works before the terminal starts or when JavaScript is unavailable. Website links back to the terminal include the selected language in the query string.
+The welcome message offers visitors unfamiliar with terminals a clickable link to the conventional website. Both this link and the header link follow the current language, including after a `lang` command. Set `VITE_WEB_URL` in `apps/terminal/.env` before production builds, starting from `apps/terminal/.env.example`. It defaults to `http://localhost:8081/` for development. Vite also embeds the header link into the HTML so it works before the terminal starts or when JavaScript is unavailable. Website links back to the terminal include the selected language in the query string. The `donate` command prints a clickable link to the donations page in the current language; set its base URL with `VITE_DONATIONS_URL`, which defaults to `http://localhost:8082/`.
 
 ## Transitions between formats
 

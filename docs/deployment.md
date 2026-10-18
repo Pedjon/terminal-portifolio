@@ -25,6 +25,7 @@ Copy each app's `.env.example` to `.env` in the same directory, or provide the v
 ```dotenv
 # apps/terminal/.env
 VITE_WEB_URL=https://www.example.com/
+VITE_DONATIONS_URL=https://donations.example.com/
 ```
 
 ```dotenv
@@ -32,9 +33,9 @@ VITE_WEB_URL=https://www.example.com/
 PUBLIC_TERMINAL_URL=https://example.com/
 ```
 
-Both values must be absolute HTTP or HTTPS URLs pointing to the other app's root. Example domains are illustrative; substitute your actual deployment URLs before a production build. Local defaults are `http://localhost:8081/` for the website and `http://localhost:8080/` for the terminal.
+Each value must be an absolute HTTP or HTTPS URL pointing to another app's root. Example domains are illustrative; substitute your actual deployment URLs before a production build. Local defaults are `http://localhost:8081/` for the website, `http://localhost:8080/` for the terminal, and `http://localhost:8082/` for the donations page.
 
-The terminal links to the website's `/` or `/pt-br/` route according to the current language. The website links to the terminal with `?lang=en` or `?lang=pt-BR`. The terminal defaults to English for missing or unsupported query values. Language commands update the cross-app link without persisting the terminal's language across reloads.
+The terminal links to the website's `/` or `/pt-br/` route according to the current language. The website links to the terminal with `?lang=en` or `?lang=pt-BR`. The terminal defaults to English for missing or unsupported query values. Language commands update the cross-app link without persisting the terminal's language across reloads. Donation links open the donations page's `/` or `/pt-br/` route for the current language, without a transition animation.
 
 With JavaScript enabled, ordinary link activation shows a brief boot animation on the website or a shutdown animation on the terminal before following the existing destination. These effects need no shared origin, storage, or hosting configuration. Reduced-motion preferences and links opened in a new tab bypass the animations; direct visits and no-JavaScript links keep normal navigation.
 
@@ -61,7 +62,7 @@ Production runs on two Cloudflare Pages projects connected to the GitHub reposit
 
 Build watch paths skip a project's build when a push changes none of its included files, so documentation-only or test-only changes do not redeploy either app, and changes to one app redeploy only that app. Shared content and dependency changes redeploy both. Cloudflare still builds for pushes with no file changes, with more than 20 commits, or with more than 3,000 changed files. Add new build inputs outside these paths, such as a root configuration file, to both include lists.
 
-Both projects set `NODE_VERSION=24` and `YARN_VERSION=1.22.22`, because the v3 build image defaults to Yarn 4 and ignores `engines` and `packageManager`. The terminal sets `VITE_WEB_URL=https://portfolio.pedjon.dev/`, and the website sets `PUBLIC_TERMINAL_URL=https://terminal.pedjon.dev/`, for production and preview builds. Preview deployments therefore link to the production version of the other app.
+Both projects set `NODE_VERSION=24` and `YARN_VERSION=1.22.22`, because the v3 build image defaults to Yarn 4 and ignores `engines` and `packageManager`. The terminal sets `VITE_WEB_URL=https://portfolio.pedjon.dev/` and `VITE_DONATIONS_URL=https://donations.pedjon.dev/`, and the website sets `PUBLIC_TERMINAL_URL=https://terminal.pedjon.dev/`, for production and preview builds. Preview deployments therefore link to the production version of the other app.
 
 Each custom domain uses a proxied `CNAME` record in the `pedjon.dev` zone pointing to the project's `pages.dev` subdomain. Change project settings in the Cloudflare dashboard under **Workers & Pages**, then retry a deployment so the new build values take effect.
 

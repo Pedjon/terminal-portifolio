@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { getInitialLocale, getWebsiteUrl, isPlainNavigation } from '../src/assets/scripts/navigation.js';
+import { getDonationsUrl, getInitialLocale, getWebsiteUrl, isPlainNavigation } from '../src/assets/scripts/navigation.js';
 
 test('reads supported incoming languages and defaults to English', () => {
   for (const query of ['?lang=pt-BR', '?lang=pt-br', '?source=web&lang=PT-BR']) {
@@ -25,6 +25,12 @@ test('website deployment URLs must be absolute HTTP or HTTPS URLs', () => {
   for (const url of ['/portfolio/', 'javascript:alert(1)', 'file:///tmp/website']) {
     assert.throws(() => getWebsiteUrl(url, 'en'), TypeError);
   }
+});
+
+test('donation links select the localized page and validate their deployment URL', () => {
+  assert.equal(getDonationsUrl('https://donations.example/', 'en'), 'https://donations.example/');
+  assert.equal(getDonationsUrl('https://donations.example', 'pt-BR'), 'https://donations.example/pt-br/');
+  assert.throws(() => getDonationsUrl('javascript:alert(1)', 'en'), /VITE_DONATIONS_URL/);
 });
 
 test('ordinary clicks, including keyboard-generated clicks, can animate navigation', () => {

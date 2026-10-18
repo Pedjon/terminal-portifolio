@@ -2,7 +2,7 @@ import { getLang, setLang, t } from './i18n.js';
 import { initStorage } from './init-storage.js';
 import { createTerminal } from './handle-terminal.js';
 import { bindKeyboard } from './keyboard-handler.js';
-import { getInitialLocale, getWebsiteUrl, isPlainNavigation } from './navigation.js';
+import { getDonationsUrl, getInitialLocale, getWebsiteUrl, isPlainNavigation } from './navigation.js';
 
 function initTerminal() {
   const input = document.getElementById('input');
@@ -23,6 +23,11 @@ function initTerminal() {
     websiteLink.href = getWebsiteUrl(import.meta.env.VITE_WEB_URL || 'http://localhost:8081/', locale);
     const welcomeLink = output.querySelector('#welcome-website-link');
     if (welcomeLink) welcomeLink.href = websiteLink.href;
+    for (const link of output.querySelectorAll('.donations-link')) link.href = donationsUrl();
+  }
+
+  function donationsUrl() {
+    return getDonationsUrl(import.meta.env.VITE_DONATIONS_URL || 'http://localhost:8082/', getLang());
   }
 
   updateLanguage(getLang());
@@ -108,6 +113,19 @@ function initTerminal() {
     scrollToBottom();
   }
 
+  function addDonation(text) {
+    const line = document.createElement('div');
+    line.className = 'output-line response';
+    const [beforeLink, afterLink] = text.split('{donations}');
+    const link = document.createElement('a');
+    link.className = 'donations-link';
+    link.href = donationsUrl();
+    link.textContent = t('donationsLink');
+    line.append(beforeLink, link, afterLink);
+    output.appendChild(line);
+    scrollToBottom();
+  }
+
   function addCommand(command) {
     const line = document.createElement('div');
     line.className = 'output-line command';
@@ -131,6 +149,7 @@ function initTerminal() {
     addCommand,
     addOutput,
     clearOutput: () => output.replaceChildren(),
+    addDonation,
     onLanguageChange: updateLanguage
   });
 

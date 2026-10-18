@@ -32,3 +32,11 @@ test('formats command errors and language confirmations in the current language'
   assert.equal(t('commandNotFound')('missing'), "Comando não encontrado: missing. Digite 'help' para ver os comandos disponíveis.");
   assert.equal(t('langChanged')('pt-BR'), 'Idioma alterado para Português (BR).');
 });
+
+test('donation text keeps one link placeholder in both languages', () => {
+  for (const language of ['en', 'pt-BR']) {
+    setLang(language);
+    assert.equal(tCmd('donate').output.split('{donations}').length, 2);
+    assert.ok(t('donationsLink'));
+  }
+});

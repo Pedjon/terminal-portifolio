@@ -1,7 +1,7 @@
 import { t, tCmd } from './i18n.js';
 
 export function buildCommands() {
-  const cmdNames = ['help', 'about', 'skills', 'projects', 'contact', 'education', 'experience', 'clear', 'lang'];
+  const cmdNames = ['help', 'about', 'skills', 'projects', 'contact', 'education', 'experience', 'donate', 'clear', 'lang'];
   const commands = cmdNames.map(name => {
     const cmdTranslation = tCmd(name);
     return {

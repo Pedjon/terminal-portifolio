@@ -3,7 +3,7 @@ import { beforeEach, test } from 'node:test';
 import { setLang, t, tCmd } from '../src/assets/scripts/i18n.js';
 import { buildCommands } from '../src/assets/scripts/init-storage.js';
 
-const commandNames = ['help', 'about', 'skills', 'projects', 'contact', 'education', 'experience', 'clear', 'lang'];
+const commandNames = ['help', 'about', 'skills', 'projects', 'contact', 'education', 'experience', 'donate', 'clear', 'lang'];
 
 beforeEach(() => setLang('en'));
 

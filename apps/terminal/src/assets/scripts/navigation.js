@@ -5,13 +5,21 @@ export function getInitialLocale(search) {
   return supportedLocales.find(locale => locale.toLowerCase() === requested) || 'en';
 }
 
-export function getWebsiteUrl(baseUrl, locale) {
+function getLocalizedRootUrl(baseUrl, locale, variable) {
   const url = new URL(baseUrl);
   if (!['http:', 'https:'].includes(url.protocol)) {
-    throw new TypeError('VITE_WEB_URL must be an absolute HTTP or HTTPS URL.');
+    throw new TypeError(`${variable} must be an absolute HTTP or HTTPS URL.`);
   }
   url.pathname = `${url.pathname.replace(/\/?$/, '/')}${locale === 'pt-BR' ? 'pt-br/' : ''}`;
   return url.href;
+}
+
+export function getWebsiteUrl(baseUrl, locale) {
+  return getLocalizedRootUrl(baseUrl, locale, 'VITE_WEB_URL');
+}
+
+export function getDonationsUrl(baseUrl, locale) {
+  return getLocalizedRootUrl(baseUrl, locale, 'VITE_DONATIONS_URL');
 }
 
 export function isPlainNavigation(event) {
