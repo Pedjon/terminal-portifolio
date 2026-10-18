@@ -77,14 +77,14 @@ Add unit tests under the relevant workspace's `tests/` directory for changes to 
 
 Run `yarn build` after changing application code or build configuration. There is no lint command configured. Browser setup, rendering, focus, and event wiring receive a smoke check when affected. A broader browser check should cover:
 
-1. The welcome message and input focus on load.
+1. The translated welcome message, its clickable website option for visitors unfamiliar with terminals, and input focus on load. Check mouse and keyboard activation of the welcome link.
 2. `help` and the portfolio content commands.
 3. `lang pt-BR` and `lang en`, including translated help and output.
 4. An unknown command and its error message.
 5. Command history with Up/Down and single-match Tab completion.
 6. `clear` and entering another command afterward.
 7. Browser console errors and layout at desktop and narrow viewport widths.
-8. Website links after language commands, incoming `?lang=pt-BR`, unsupported locale fallback, and Shift+Tab focus navigation.
+8. Header and welcome website links after language commands, incoming `?lang=pt-BR`, unsupported locale fallback, and Shift+Tab focus navigation. After `clear`, language changes must still work with the welcome link removed.
 
 For the website, check both locales, section navigation, contact links, light/dark system preferences, saved theme choices, storage failure, and no-JavaScript rendering. Run shared content tests and website tests through the root `yarn test` command.
 

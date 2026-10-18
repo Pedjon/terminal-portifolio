@@ -19,6 +19,8 @@ function initTerminal() {
     input.setAttribute('aria-label', t('inputLabel'));
     websiteLabel.textContent = t('websiteLink');
     websiteLink.href = getWebsiteUrl(import.meta.env.VITE_WEB_URL || 'http://localhost:8081/', locale);
+    const welcomeLink = output.querySelector('#welcome-website-link');
+    if (welcomeLink) welcomeLink.href = websiteLink.href;
   }
 
   updateLanguage(getLang());
@@ -60,6 +62,19 @@ function initTerminal() {
     scrollToBottom();
   }
 
+  function addWelcome() {
+    const line = document.createElement('div');
+    line.className = 'output-line response';
+    const [beforeLink, afterLink] = t('welcome').split('{website}');
+    const link = document.createElement('a');
+    link.id = 'welcome-website-link';
+    link.href = websiteLink.href;
+    link.textContent = t('welcomeWebsiteLink');
+    line.append(beforeLink, link, afterLink);
+    output.appendChild(line);
+    scrollToBottom();
+  }
+
   function addCommand(command) {
     const line = document.createElement('div');
     line.className = 'output-line command';
@@ -87,8 +102,10 @@ function initTerminal() {
   });
 
   bindKeyboard(input, terminal);
-  terminalBody.addEventListener('click', () => input.focus());
-  addOutput(t('welcome'), 'response');
+  terminalBody.addEventListener('click', (event) => {
+    if (!event.target.closest('a')) input.focus();
+  });
+  addWelcome();
   input.focus();
 }
 

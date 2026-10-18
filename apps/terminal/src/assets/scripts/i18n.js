@@ -7,6 +7,7 @@ const translations = {
   en: {
     pageTitle: 'Portfolio - Terminal',
     websiteLink: 'Website portfolio',
+    welcomeWebsiteLink: 'portfolio website',
     inputLabel: 'Terminal command',
     welcome: `
 Welcome to my Portfolio Terminal!
@@ -14,6 +15,8 @@ Welcome to my Portfolio Terminal!
 
 Type 'help' to see available commands.
 Type any command and press Enter to interact.
+
+Not used to using a terminal? You can also view my {website}.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `,
@@ -56,6 +59,7 @@ Type any command and press Enter to interact.
   'pt-BR': {
     pageTitle: 'Portfólio - Terminal',
     websiteLink: 'Portfólio web',
+    welcomeWebsiteLink: 'site do portfólio',
     inputLabel: 'Comando do terminal',
     welcome: `
 Bem-vindo ao meu Terminal Portfólio!
@@ -63,6 +67,8 @@ Bem-vindo ao meu Terminal Portfólio!
 
 Digite 'help' para ver os comandos disponíveis.
 Digite qualquer comando e pressione Enter.
+
+Não está acostumado a usar um terminal? Você também pode visitar o {website}.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 `,
