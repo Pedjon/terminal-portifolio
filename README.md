@@ -92,7 +92,7 @@ apps/web/
   astro.config.mjs                 Static build configuration
 packages/content/                  Shared structured English and Portuguese résumé records
 docs/portfolio.md                  Résumé reference for personalized content
-docs/deployment.md                 Independent builds, URL configuration, and static hosting
+docs/deployment.md                 Independent builds, URL configuration, and Cloudflare Pages hosting
 package.json                       Private workspace root and repository commands
 yarn.lock                          Shared Yarn Classic lockfile
 Dockerfile                         Node 24 development image

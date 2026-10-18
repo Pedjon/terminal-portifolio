@@ -32,7 +32,7 @@
 | `apps/web/src/scripts/` | Website UI translations, terminal URL generation and boot navigation, and theme behavior. |
 | `apps/web/src/styles/global.css` | Responsive website layout and light/dark color tokens. |
 | `apps/web/tests/` | Website language completeness, navigation, and theme tests. |
-| `docs/deployment.md` | Independent build commands, URL environment variables, and static preview instructions. |
+| `docs/deployment.md` | Independent build commands, URL environment variables, Cloudflare Pages project settings, and static preview instructions. |
 | `Dockerfile` | Node 24 Alpine development image with all workspace dependencies. |
 | `docker-compose.yml` | Separate terminal and website services on ports 8080 and 8081, with app source, tests, and shared content mounted. |
 

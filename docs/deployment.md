@@ -1,6 +1,6 @@
 # Independent static deployments
 
-Both apps build from the same repository and shared content package, but each output can be deployed independently. Keep the terminal at the main portfolio URL and deploy the website at its own domain or subdomain. Hosting configuration and publication are outside this repository's setup.
+Both apps build from the same repository and shared content package, but each output can be deployed independently. Each app is served from the root of its own domain or subdomain. Production uses Cloudflare Pages; see [Cloudflare Pages](#cloudflare-pages).
 
 Use Node.js 24 or newer and Yarn Classic 1.22.22. Install from the repository root, including the workspace manifests and the single lockfile:
 
@@ -42,6 +42,23 @@ Environment values are embedded at build time. Rebuild after changing them; chan
 Docker Compose runs development servers and accepts the same variable names from your shell or the root Compose `.env` file. App-local `.env` files are excluded from Docker images; Compose supplies localhost defaults unless you override them.
 
 Serve the website's `index.html` at `/` and `pt-br/index.html` at `/pt-br/`. Use ordinary static directory-index handling, rather than an SPA fallback to the English homepage. Both apps are intended to be served from the root of their respective deployments.
+
+## Cloudflare Pages
+
+Production runs on two Cloudflare Pages projects connected to the GitHub repository. Pushes to `main` deploy production; other branches and pull requests get preview deployments on `pages.dev`. Both projects build from the repository root so the workspace and lockfile are available.
+
+| Setting | Terminal | Website |
+| --- | --- | --- |
+| Project | `pedjon-terminal` | `pedjon-portfolio` |
+| Custom domain | `terminal.pedjon.dev` | `portfolio.pedjon.dev` |
+| Build command | `yarn build:terminal` | `yarn build:web` |
+| Build output directory | `apps/terminal/dist` | `apps/web/dist` |
+| Root directory | repository root | repository root |
+| Build system version | 3 | 3 |
+
+Both projects set `NODE_VERSION=24` and `YARN_VERSION=1.22.22`, because the v3 build image defaults to Yarn 4 and ignores `engines` and `packageManager`. The terminal sets `VITE_WEB_URL=https://portfolio.pedjon.dev/`, and the website sets `PUBLIC_TERMINAL_URL=https://terminal.pedjon.dev/`, for production and preview builds. Preview deployments therefore link to the production version of the other app.
+
+Each custom domain uses a proxied `CNAME` record in the `pedjon.dev` zone pointing to the project's `pages.dev` subdomain. Change project settings in the Cloudflare dashboard under **Workers & Pages**, then retry a deployment so the new build values take effect.
 
 ## Preview built output
 
